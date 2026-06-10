@@ -1,0 +1,14 @@
+package user
+
+type RegisterRequest struct {
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required,min=6"`
+	Phone    string `json:"phone" binding:"required,min=10,numeric"`
+	Name     string `json:"name" binding:"required"`
+}
+
+type LoginRequest struct {
+	Email    string `json:"email"`
+	Phone    string `json:"string"`
+	Password string `json:"password" binding:"min=8"`
+}

@@ -1,6 +1,7 @@
 package user
 
 import (
+	"github.com/HoanNghi16/Devall_backend/internal/auth"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -10,9 +11,12 @@ func UserRoutes(router *gin.Engine, db *gorm.DB){
 	service := NewService(repo)
 	handler := NewHandler(service)
 
-	user := router.Group("/user")
+	//Public handler
+	router.POST("/user/register", handler.RegisterHandler)
+	router.POST("/user/login", handler.LoginHandler)
+
+	protected := router.Group("/user", auth.AuthRequired())
 	{
-		user.POST("/register", handler.RegisterHandler)
-		user.POST("/login", handler.LoginHandler)
+		protected.GET("/profile", handler.ProfileHandler)
 	}
 }

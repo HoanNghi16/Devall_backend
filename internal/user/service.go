@@ -3,6 +3,7 @@ package user
 import (
 	"errors"
 
+	"github.com/HoanNghi16/Devall_backend/internal/auth"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -54,18 +55,47 @@ func (s *Service) Register(input *RegisterRequest) (error) {
 }
 
 
-func (s *Service) Login(input *LoginRequest) error {
+func (s *Service) Login(input *LoginRequest) (*TokenResponse, error) {
 	user, _ := s.repository.FindByEmail(input.Email)
 
 	if user == nil{
-		return errors.New("Email không tồn tại!")
+		return nil,errors.New("Email không tồn tại!")
 	}
-
 	if err:= bcrypt.CompareHashAndPassword(
 		[]byte(user.Password), []byte(input.Password),
 	); err != nil{
-		return errors.New("Sai mật khẩu")
+		return nil,errors.New("Sai mật khẩu")
 	}
 
-	return nil
+	access,acc_err := auth.GenerateAccess(user.ID, user.Role)
+	refresh,refr_err := auth.GenerateRefresh(user.ID)
+	if acc_err != nil || refr_err != nil{
+		return nil, errors.New("Tạo token thất bại")
+	}
+	return &TokenResponse{
+		Access: access,
+		Refresh: refresh,
+	}, nil
+}
+
+
+func (s *Service) GetProfile(id uint)(*ProfileResponse,error){
+	user, err := s.repository.FindByID(id)
+
+	if err != nil{
+		return nil,err
+	}
+
+	profile := ProfileResponse{
+		ID: user.ID,
+		Email: user.Email,
+		Role: user.Role,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+		LastLogin: user.LastLogin,
+		Profile: user.Profile,
+	}
+
+	return &profile, nil
+
 }

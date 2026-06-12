@@ -4,14 +4,13 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/HoanNghi16/Devall_backend/internal/course"
 	"github.com/HoanNghi16/Devall_backend/internal/user"
-	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 func ConnectDB() (*gorm.DB, error) {
-	godotenv.Load()
 	db_host := os.Getenv("DB_HOST")
 	db_name := os.Getenv("DB_NAME")
 	db_user := os.Getenv("DB_USER")
@@ -31,7 +30,13 @@ func ConnectDB() (*gorm.DB, error) {
 	}
 
 	//Nếu error khi auto migrate -> trả về nil, error
-	if err := db.AutoMigrate(&user.User{}, &user.Profile{}) ; err != nil{
+	if err := db.AutoMigrate(
+		&user.User{}, 
+		&user.Profile{},
+		&course.Course{},
+		&course.Lesson{},
+		&course.ContentBlock{},
+	) ; err != nil{
 		return nil, fmt.Errorf("auto migrate failed: %w", err)
 	}
 	return db, err

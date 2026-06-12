@@ -44,3 +44,14 @@ func (r *Repository) FindByEmail(email string) (*User, error){
 }
 
 
+func (r *Repository) FindByID(id uint)(*User, error){
+	var user User
+
+	err := r.db.Joins("Profile").Where("users.id=?", id).First(&user).Error
+
+	if err != nil{
+		return nil, err
+	}
+
+	return &user, nil
+}

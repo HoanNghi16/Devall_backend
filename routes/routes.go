@@ -1,6 +1,8 @@
 package routes
 
 import (
+	"github.com/HoanNghi16/Devall_backend/internal/auth"
+	"github.com/HoanNghi16/Devall_backend/internal/course"
 	"github.com/HoanNghi16/Devall_backend/internal/user"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -23,6 +25,9 @@ func SetupRouter (db *gorm.DB) *gin.Engine{
 
 	//Setup API
 
+	router.GET("/logout", auth.LogoutHandler)
+
+	course.CourseRoutes(router, db)
 	user.UserRoutes(router, db)
 	// router.GET("/test", func ( cntx *gin.Context) {
 	// 	cntx.JSON(200, gin.H{"message": "Test Ngon lành"})

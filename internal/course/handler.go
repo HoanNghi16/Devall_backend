@@ -17,15 +17,20 @@ func NewHandler(service *Service) *Handler {
 }
 
 func (handler *Handler) CoursesHandler(cntx *gin.Context) {
-	var input CoursesRequest
-	err := cntx.ShouldBindJSON(&input)
+	id, err := strconv.ParseUint(cntx.Query("cursor"), 10, 64)
+	
 	if err!=nil {
 		courses,_ := handler.service.ListCourseService(uint(0))
 		cntx.JSON(200, courses)
 		return
 	}
-	courses, err := handler.service.ListCourseService(input.Cursor)
+	courses, err := handler.service.ListCourseService(uint(id))
 
+	if err != nil{
+		cntx.JSON(403, gin.H{
+			"message": "Bạn không có quyền truy cập!",
+		})
+	}
 	cntx.JSON(200, courses)
 }
 

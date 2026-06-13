@@ -4,10 +4,6 @@ import (
 	"time"
 )
 
-type CoursesRequest struct {
-	Cursor uint `json:"cursor"`
-}
-
 type ResponseAuthor struct{
 	Name string `json:"name"`
 	Avatar string `json:"avatar"`

@@ -17,6 +17,7 @@ type Course struct {
 	CreatedAt 		 time.Time
 	UpdatedAt  		 time.Time
 	IsPublished 	 bool `gorm:"default:false"`
+	Lessons []Lesson
 }
 
 type Lesson struct{
@@ -25,6 +26,7 @@ type Lesson struct{
 	Course 	 	Course `gorm:"foreignKey:CourseID"`
 	Position 	uint
 	Name 	 	string `gorm:"not null"`
+	ContentBlocks []ContentBlock
 }
 
 type ContentBlock struct {

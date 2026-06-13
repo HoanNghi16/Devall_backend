@@ -14,10 +14,13 @@ func NewRepository(db *gorm.DB) (*Repository){
 	}
 }
 
-//Chưa chạy được!
+//Lấy chi tiết khóa học
+//Dùng Preload để lấy Danh sách bài học trước
+//Dùng Preload để lấy ContentBlocks trong Lessons
+//->Find để đưa vào course
 func (repository *Repository)GetCourse(id uint)(*Course, error){
 	var course Course
-	err := repository.db.Joins("Lessons").Joins("ContentBlocks").Where("courses.id = ?", id).First(&course).Error
+	err := repository.db.Preload("Lessons").Preload("Lessons.ContentBlocks").Find(&course, id).Error
 	if err != nil{
 		return nil, err
 	}

@@ -12,5 +12,5 @@ func CourseRoutes(router *gin.Engine, db *gorm.DB){
 	handler := NewHandler(service)
 
 	router.GET("/course/:id", handler.GetFullCourseHandler)
-	router.POST("/course/courses", handler.CoursesHandler)
+	router.GET("/course/courses", handler.CoursesHandler)
 }

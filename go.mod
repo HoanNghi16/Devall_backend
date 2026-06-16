@@ -1,5 +1,4 @@
 module github.com/HoanNghi16/Devall_backend
-
 go 1.26.4
 
 require (

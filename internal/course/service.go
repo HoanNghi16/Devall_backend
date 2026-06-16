@@ -15,7 +15,7 @@ func (service *Service) ListCourseService(cursor uint) ([]ResponseCourse, error)
 	if err != nil {
 		return nil, err
 	}
-	var course Course
+	var course *Course
 	return course.ToResponseDataList(courses), nil
 }
 

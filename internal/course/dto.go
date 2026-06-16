@@ -10,7 +10,7 @@ type ResponseAuthor struct{
 }
 
 type ResponseCourse struct { //Để json.Marshal() trả về đúng tên fields
-	ID               uint   `json:"id"`
+	ID               uint  `json:"id"`
 	Name             string`json:"name"`
 	Avatar           string`json:"avatar"`
 	Author           ResponseAuthor `json:"author"`

@@ -1,6 +1,9 @@
 package course
 
 import (
+	"errors"
+	"log"
+
 	"gorm.io/gorm"
 )
 
@@ -20,9 +23,13 @@ func NewRepository(db *gorm.DB) (*Repository){
 //->Find để đưa vào course
 func (repository *Repository)GetCourse(id uint)(*Course, error){
 	var course Course
+	log.Println(id)
 	err := repository.db.Preload("Lessons").Preload("Lessons.ContentBlocks").Find(&course, id).Error
 	if err != nil{
 		return nil, err
+	}
+	if course.ID == 0{
+		return nil, errors.New("Không tìm thấy khóa học!")
 	}
 	return &course, nil
 }

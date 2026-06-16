@@ -49,6 +49,7 @@ func (handler *Handler) GetFullCourseHandler(cntx *gin.Context){
 		cntx.JSON(400, gin.H{
 			"message": "ID khóa học không hợp lệ!",
 		})
+		return
 	}
 
 	course, err := handler.service.CourseFullService(uint(id1))

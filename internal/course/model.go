@@ -9,7 +9,7 @@ import (
 
 type Course struct {
 	ID       		 uint   `gorm:"primaryKey;autoIncrement"`
-	Name     		 string `gorm:"not null"`
+	Name     		 string `gorm:"not null;unique"`
 	Avatar 	 		 string
 	AuthorID 		 uint   `gorm:"not null"`
 	Author   		 user.Profile `gorm:"foreignKey:AuthorID"`
@@ -34,7 +34,7 @@ type ContentBlock struct {
 	Position 	uint
 	LessonID 	uint `gorm:"not null"`
 	Lesson 		Lesson `gorm:"foreignKey:LessonID"`
-	BlockType 	string  // "text" | "video" | "visualizer" | "codeEditor"
+	BlockType 	string  // "text" | "video" | "visualizer" | "codeEditor" | "codePreview"
 	Data 		datatypes.JSON
 }
 

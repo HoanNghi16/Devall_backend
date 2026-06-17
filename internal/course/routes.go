@@ -1,6 +1,7 @@
 package course
 
 import (
+	"github.com/HoanNghi16/Devall_backend/internal/auth"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -13,4 +14,9 @@ func CourseRoutes(router *gin.Engine, db *gorm.DB){
 
 	router.GET("/course/:id", handler.GetFullCourseHandler)
 	router.GET("/course/courses", handler.CoursesHandler)
+
+	private := router.Group("/course/my", auth.AuthRequired())
+	{
+		private.GET("/courses", handler.MyCourses)
+	}
 }

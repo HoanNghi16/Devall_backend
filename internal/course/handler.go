@@ -61,3 +61,18 @@ func (handler *Handler) GetFullCourseHandler(cntx *gin.Context){
 	}
 	cntx.JSON(200, course)
 }
+
+
+func (handler *Handler) MyCourses(cntx * gin.Context){
+	userID, ok := cntx.Get("userID")
+	if ok{
+		courses,err := handler.service.repository.GetMyCourses(userID.(uint))
+		if err != nil{
+			cntx.JSON(400, gin.H{
+				"message": err,
+			})
+			return
+		}
+		cntx.JSON(200, courses)
+	}
+}

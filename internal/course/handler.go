@@ -1,6 +1,7 @@
 package course
 
 import (
+	"log"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -17,19 +18,27 @@ func NewHandler(service *Service) *Handler {
 }
 
 func (handler *Handler) CoursesHandler(cntx *gin.Context) {
-	id, err := strconv.ParseUint(cntx.Query("cursor"), 10, 64)
 	
-	if err!=nil {
-		courses,_ := handler.service.ListCourseService(uint(0))
-		cntx.JSON(200, courses)
+	var filter *CourseFilter
+
+	err:= cntx.ShouldBindQuery(&filter)
+
+	log.Print(filter.Cursor, filter.Level, filter.TopicIDs)
+
+	if err!=nil{
+		cntx.JSON(400,gin.H{
+			"message": "Bộ lọc không đúng!",
+		})
 		return
 	}
-	courses, err := handler.service.ListCourseService(uint(id))
+
+	courses, err := handler.service.ListCourseService(filter.Cursor, filter.TopicIDs, filter.Level)
 
 	if err != nil{
 		cntx.JSON(403, gin.H{
 			"message": "Bạn không có quyền truy cập!",
 		})
+		return
 	}
 	cntx.JSON(200, courses)
 }

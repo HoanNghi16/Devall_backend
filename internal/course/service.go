@@ -10,8 +10,8 @@ func NewService(repository *Repository) *Service {
 	}
 }
 
-func (service *Service) ListCourseService(cursor uint) ([]ResponseCourse, error) {
-	courses, err := service.repository.FindAll(cursor)
+func (service *Service) ListCourseService(cursor uint, topicIDs []uint, level string) ([]ResponseCourse, error) {
+	courses, err := service.repository.FindAll(cursor, topicIDs, level)
 	if err != nil {
 		return nil, err
 	}

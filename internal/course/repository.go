@@ -1,6 +1,7 @@
 package course
 
 import (
+	"encoding/json"
 	"errors"
 	"log"
 
@@ -35,12 +36,21 @@ func (repository *Repository)GetCourse(id uint)(*Course, error){
 	return &course, nil
 }
 
-func (repository *Repository)FindAll(cursor uint)([]Course, error){
+func (repository *Repository)FindAll(cursor uint, topicIDs []uint, level string )([]Course, error){
 	var courses []Course
-	err := repository.db.Joins("Author").Where("courses.id > ? and is_published = true", cursor).Limit(12).Find(&courses).Error
+	query := repository.db.Joins("Author").Where("courses.id > ?", cursor)
+	if len(topicIDs) > 0{
+		query = query.Joins("join topic_courses tc on tc.course_id = courses.id").Where("tc.topic_id in ?", topicIDs).Distinct("courses.id")
+	}
+	if level != ""{
+		query = query.Where("level = ?", level)
+	}
+	err := query.Find(&courses).Error
 	if err != nil{
 		return nil, err
 	}
+	str, err:= json.MarshalIndent(courses, "", "")
+	log.Print(string(str))
 	return courses, nil
 }
 

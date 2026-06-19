@@ -8,34 +8,48 @@ import (
 )
 
 type Course struct {
-	ID       		 uint   `gorm:"primaryKey;autoIncrement"`
-	Name     		 string `gorm:"not null;unique"`
-	Avatar 	 		 string
-	AuthorID 		 uint   `gorm:"not null"`
-	Author   		 user.Profile `gorm:"foreignKey:AuthorID"`
-	ShortDescription string
-	CreatedAt 		 time.Time
-	UpdatedAt  		 time.Time
-	IsPublished 	 bool `gorm:"default:false"`
-	Lessons []Lesson
+	ID       		 uint   `gorm:"primaryKey;autoIncrement" json:"id"`
+	Name     		 string `gorm:"not null;unique" json:"name"`
+	Avatar 	 		 string	`json:"avatar"`
+	AuthorID 		 uint   `gorm:"not null" json:"author_id"`
+	Author   		 user.Profile `gorm:"foreignKey:AuthorID" json:"author"`
+	ShortDescription string `json:"short_description"`
+	CreatedAt 		 time.Time 	`json:"created_at"`
+	UpdatedAt  		 time.Time	`json:"updated_at"`
+	IsPublished 	 bool `gorm:"default:false" json:"is_published"`
+	Lessons []Lesson `json:"lessons"`
+	Topics []TopicCourse `json:"topics"`
+	Level string `gorm:"default:easy" json:"level"`
 }
 
 type Lesson struct{
-	ID 		 	uint `gorm:"primaryKey;autoIncrement"`
-	CourseID 	uint `gorm:"not null"`
+	ID 		 	uint `gorm:"primaryKey;autoIncrement" json:"id"`
+	CourseID 	uint `gorm:"not null" json:"course_id"`
 	Course 	 	Course `gorm:"foreignKey:CourseID"`
-	Position 	uint
-	Name 	 	string `gorm:"not null"`
-	ContentBlocks []ContentBlock
+	Position 	uint `json:"position"`
+	Name 	 	string `gorm:"not null" json:"name"`
+	ContentBlocks []ContentBlock `json:"content_blocks"`
 }
 
 type ContentBlock struct {
-	ID 			uint `gorm:"primaryKey;autoIncrement"`
-	Position 	uint
-	LessonID 	uint `gorm:"not null"`
+	ID 			uint `gorm:"primaryKey;autoIncrement" json:"id"`
+	Position 	uint `json:"postion"`
+	LessonID 	uint `gorm:"not null" json:"lesson_id"`
 	Lesson 		Lesson `gorm:"foreignKey:LessonID"`
-	BlockType 	string  // "text" | "video" | "visualizer" | "codeEditor" | "codePreview"
-	Data 		datatypes.JSON
+	BlockType 	string  `json:"block_type"` // "text" | "video" | "visualizer" | "codeEditor" | "codePreview"
+	Data 		datatypes.JSON `json:"data"`
+}
+
+
+type Topic struct{
+	ID uint `gorm:"primaryKey;autoIncrement" json:"id"`
+	Name string `gorm:"not null"`
+}
+
+type TopicCourse struct{
+	CourseID uint `gorm:"primaryKey"`
+	TopicID uint `gorm:"primaryKey"`
+	Topic Topic `gorm:"foreignKey:TopicID"`
 }
 
 

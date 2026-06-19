@@ -36,6 +36,8 @@ func ConnectDB() (*gorm.DB, error) {
 		&course.Course{},
 		&course.Lesson{},
 		&course.ContentBlock{},
+		&course.Topic{},
+		&course.TopicCourse{},
 	) ; err != nil{
 		return nil, fmt.Errorf("auto migrate failed: %w", err)
 	}

@@ -15,8 +15,9 @@ func CourseRoutes(router *gin.Engine, db *gorm.DB){
 	router.GET("/course/:id", handler.GetFullCourseHandler)
 	router.GET("/course/courses", handler.CoursesHandler)
 
-	private := router.Group("/course/my", auth.AuthRequired())
+	private := router.Group("/course", auth.AuthRequired())
 	{
-		private.GET("/courses", handler.MyCourses)
+		private.POST("/my", handler.CreateNewCourse)
+		private.GET("/my", handler.MyCourses)
 	}
 }

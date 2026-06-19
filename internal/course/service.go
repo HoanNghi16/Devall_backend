@@ -1,5 +1,11 @@
 package course
 
+import (
+	"errors"
+
+	"github.com/HoanNghi16/Devall_backend/internal/user"
+)
+
 type Service struct {
 	repository *Repository
 }
@@ -33,4 +39,30 @@ func (service *Service) MyCourseService(userID uint) ([]Course, error) {
 		return nil, err
 	}
 	return courses, nil
+}
+
+func (service *Service) CreateMyCourse(userID uint, input *RequestCourse) error {
+	userRepository := user.NewRepository(service.repository.db)
+
+	user, err := userRepository.FindByID(userID) 
+	if err != nil{
+		return errors.New("ID người dùng không hợp lệ!")
+	}
+
+	course := Course{
+		Name:             input.Name,
+		Avatar:           input.Avatar,
+		ShortDescription: input.ShortDescription,
+		Level:            input.Level,
+		Author: user.Profile,
+		AuthorID: user.Profile.ID,
+		IsPublished:      input.IsPublished,
+	}
+
+	lessons := []Lesson{}
+
+	if err := service.repository.CreateMyCourse(&course, lessons); err != nil {
+		return err
+	}
+	return nil
 }

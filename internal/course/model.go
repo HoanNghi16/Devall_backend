@@ -33,7 +33,7 @@ type Lesson struct{
 
 type ContentBlock struct {
 	ID 			uint `gorm:"primaryKey;autoIncrement" json:"id"`
-	Position 	uint `json:"postion"`
+	Position 	uint `json:"position"`
 	LessonID 	uint `gorm:"not null" json:"lesson_id"`
 	Lesson 		Lesson `gorm:"foreignKey:LessonID"`
 	BlockType 	string  `json:"block_type"` // "text" | "video" | "visualizer" | "codeEditor" | "codePreview"

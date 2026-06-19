@@ -1,7 +1,6 @@
 package course
 
 import (
-	"encoding/json"
 	"errors"
 	"log"
 
@@ -42,15 +41,17 @@ func (repository *Repository)FindAll(cursor uint, topicIDs []uint, level string 
 	if len(topicIDs) > 0{
 		query = query.Joins("join topic_courses tc on tc.course_id = courses.id").Where("tc.topic_id in ?", topicIDs).Distinct("courses.id")
 	}
-	if level != ""{
+
+	if level != "" && level != "all"{
 		query = query.Where("level = ?", level)
 	}
+
 	err := query.Find(&courses).Error
+
 	if err != nil{
 		return nil, err
 	}
-	str, err:= json.MarshalIndent(courses, "", "")
-	log.Print(string(str))
+
 	return courses, nil
 }
 
@@ -66,4 +67,19 @@ func (repository *Repository)GetMyCourses(userID uint)([]Course, error){
 		return courses,nil
 	}
 	return nil, err1
+}
+
+
+func (repository *Repository) CreateMyCourse(course *Course, lessons []Lesson)(error){
+	exist := repository.db.Where("name=?", course.Name).First()
+	return repository.db.Transaction(
+		func (tx *gorm.DB)error{
+			courseID := tx.Create(course)
+			if courseID != nil {
+				return errors.New("Vui lòng kiểm tra lại dữ liệu!")
+			}
+			err := tx.Create(lessons).Error
+			return err
+		},
+	)
 }

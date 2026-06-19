@@ -1,7 +1,6 @@
 package course
 
 import (
-	"log"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -17,17 +16,14 @@ func NewHandler(service *Service) *Handler {
 	}
 }
 
+// GET /course/courses
 func (handler *Handler) CoursesHandler(cntx *gin.Context) {
 	
-	var filter *CourseFilter
-
-	err:= cntx.ShouldBindQuery(&filter)
-
-	log.Print(filter.Cursor, filter.Level, filter.TopicIDs)
-
-	if err!=nil{
+	var filter CourseFilter
+	
+	if err:= cntx.ShouldBindQuery(&filter); err!=nil{
 		cntx.JSON(400,gin.H{
-			"message": "Bộ lọc không đúng!",
+			"message": "Bộ lọc không hợp lệ!",
 		})
 		return
 	}
@@ -43,6 +39,10 @@ func (handler *Handler) CoursesHandler(cntx *gin.Context) {
 	cntx.JSON(200, courses)
 }
 
+
+
+
+// GET /course/:id
 func (handler *Handler) GetFullCourseHandler(cntx *gin.Context){
 	id, ok := cntx.Params.Get("id")
 	if !ok{
@@ -72,6 +72,42 @@ func (handler *Handler) GetFullCourseHandler(cntx *gin.Context){
 }
 
 
+
+// POST /course/my
+func (handler *Handler) CreateNewCourse(cntx *gin.Context){
+	var newCourse RequestCourse
+
+	if err := cntx.ShouldBind(&newCourse); err != nil{
+		cntx.JSON(400, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	id, ok := cntx.Get("userID")
+	
+	if !ok{
+		cntx.JSON(400, gin.H{
+			"message":"ID người dùng không hợp lệ!",
+		})
+		return
+	}
+
+
+	if err := handler.service.CreateMyCourse(id.(uint), &newCourse); err != nil{
+		cntx.JSON(400, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	cntx.JSON(200, gin.H{
+		"message": "Thêm khóa học thành công!",
+	})
+}
+
+
+// GET /course/my
 func (handler *Handler) MyCourses(cntx * gin.Context){
 	userID, ok := cntx.Get("userID")
 	if ok{

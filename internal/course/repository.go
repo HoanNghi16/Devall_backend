@@ -25,7 +25,7 @@ func NewRepository(db *gorm.DB) (*Repository){
 func (repository *Repository)GetCourse(id uint)(*Course, error){
 	var course Course
 	log.Println(id)
-	err := repository.db.Preload("Lessons").Preload("Lessons.ContentBlocks").Find(&course, id).Error
+	err := repository.db.Preload("Lessons").Preload("Lessons.ContentBlocks").Where("is_published = true").Find(&course, id).Error
 	if err != nil{
 		return nil, err
 	}
@@ -37,7 +37,7 @@ func (repository *Repository)GetCourse(id uint)(*Course, error){
 
 func (repository *Repository)FindAll(cursor uint, topicIDs []uint, level string )([]Course, error){
 	var courses []Course
-	query := repository.db.Joins("Author").Where("courses.id > ?", cursor)
+	query := repository.db.Joins("Author").Where("courses.id > ? and courses.is_published = true", cursor)
 	if len(topicIDs) > 0{
 		query = query.Joins("join topic_courses tc on tc.course_id = courses.id").Where("tc.topic_id in ?", topicIDs).Distinct("courses.id")
 	}
@@ -70,16 +70,12 @@ func (repository *Repository)GetMyCourses(userID uint)([]Course, error){
 }
 
 
-func (repository *Repository) CreateMyCourse(course *Course, lessons []Lesson)(error){
-	exist := repository.db.Where("name=?", course.Name).First()
-	return repository.db.Transaction(
-		func (tx *gorm.DB)error{
-			courseID := tx.Create(course)
-			if courseID != nil {
-				return errors.New("Vui lòng kiểm tra lại dữ liệu!")
-			}
-			err := tx.Create(lessons).Error
-			return err
-		},
-	)
+func (repository *Repository) CreateMyCourse(course *Course)(error){
+	return repository.db.Create(course).Error
+}
+
+func (repository *Repository) GetTopics ()([]Topic,error){
+	var topics []Topic
+	err:=repository.db.Find(&topics).Error
+	return topics, err
 }

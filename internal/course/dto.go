@@ -52,3 +52,52 @@ type RequestCourse struct {
 	Topics []uint `json:"topics"`
 	Level string `json:"level" binding:"oneof=easy medium hard advanced"` // easy | medium | hard | advanced
 }
+
+func (request *RequestCourse) ParseContentBlocks(requestBlocks []RequestContentBlock) []ContentBlock{
+	contentBlocks := make([]ContentBlock, len(requestBlocks))
+	for index,block := range requestBlocks{
+		contentBlocks[index] = ContentBlock{
+			Position: block.Position,
+			BlockType: block.BlockType,
+			Data: block.Data,
+		}
+	}
+	return contentBlocks
+}
+
+
+func (request *RequestCourse) ParseLessons(requestLessons []RequestLesson) []Lesson{
+	lessons := make([]Lesson, len(requestLessons))
+
+	for index, lesson := range requestLessons{
+		lessons[index] = Lesson{
+			Position: lesson.Position,
+			Name: lesson.Name,
+			ContentBlocks: request.ParseContentBlocks(lesson.ContentBlocks),
+		}
+	}
+	return lessons
+}
+
+func (request *RequestCourse) ParseTopics(topicIDs []uint) []TopicCourse{
+	topics := make([]TopicCourse, len(topicIDs))
+	for index, id := range topicIDs{
+		topics[index] = TopicCourse{
+			TopicID: id,
+		}
+	}
+	return topics
+}
+
+func (request *RequestCourse) ParseCourse() Course{
+	return Course{
+		Name: request.Name,
+		ShortDescription: request.ShortDescription,
+		IsPublished: request.IsPublished,
+		Level: request.Level,
+		Lessons: request.ParseLessons(request.Lessons),
+		Avatar: request.Avatar,
+		Topics: request.ParseTopics(request.Topics),
+	}
+}
+

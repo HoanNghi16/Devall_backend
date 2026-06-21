@@ -17,25 +17,23 @@ type Course struct {
 	CreatedAt 		 time.Time 	`json:"created_at"`
 	UpdatedAt  		 time.Time	`json:"updated_at"`
 	IsPublished 	 bool `gorm:"default:false" json:"is_published"`
-	Lessons []Lesson `json:"lessons"`
-	Topics []TopicCourse `json:"topics"`
+	Lessons []Lesson `gorm:"foreignKey:CourseId" json:"lessons"`
+	Topics []TopicCourse `gorm:"foreignKey:CourseID" json:"topics"`
 	Level string `gorm:"default:easy" json:"level"`
 }
 
 type Lesson struct{
 	ID 		 	uint `gorm:"primaryKey;autoIncrement" json:"id"`
 	CourseID 	uint `gorm:"not null" json:"course_id"`
-	Course 	 	Course `gorm:"foreignKey:CourseID"`
 	Position 	uint `json:"position"`
 	Name 	 	string `gorm:"not null" json:"name"`
-	ContentBlocks []ContentBlock `json:"content_blocks"`
+	ContentBlocks []ContentBlock `gorm:"foreignKet:LessonID" json:"content_blocks"`
 }
 
 type ContentBlock struct {
 	ID 			uint `gorm:"primaryKey;autoIncrement" json:"id"`
 	Position 	uint `json:"position"`
 	LessonID 	uint `gorm:"not null" json:"lesson_id"`
-	Lesson 		Lesson `gorm:"foreignKey:LessonID"`
 	BlockType 	string  `json:"block_type"` // "text" | "video" | "visualizer" | "codeEditor" | "codePreview"
 	Data 		datatypes.JSON `json:"data"`
 }

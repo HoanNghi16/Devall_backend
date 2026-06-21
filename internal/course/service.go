@@ -48,20 +48,9 @@ func (service *Service) CreateMyCourse(userID uint, input *RequestCourse) error 
 	if err != nil{
 		return errors.New("ID người dùng không hợp lệ!")
 	}
-
-	course := Course{
-		Name:             input.Name,
-		Avatar:           input.Avatar,
-		ShortDescription: input.ShortDescription,
-		Level:            input.Level,
-		Author: user.Profile,
-		AuthorID: user.Profile.ID,
-		IsPublished:      input.IsPublished,
-	}
-
-	lessons := []Lesson{}
-
-	if err := service.repository.CreateMyCourse(&course, lessons); err != nil {
+	course := input.ParseCourse()
+	course.Author = user.Profile
+	if err := service.repository.CreateMyCourse(&course); err != nil {
 		return err
 	}
 	return nil

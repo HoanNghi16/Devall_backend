@@ -12,7 +12,7 @@ func AuthRequired() gin.HandlerFunc{
 
 		if err != nil{
 			cntx.JSON(http.StatusUnauthorized, gin.H{
-				"message": "Chưa đăng nhập!",
+				"message": "Bạn chưa đăng nhập!",
 			} )
 			cntx.Abort()
 			return 

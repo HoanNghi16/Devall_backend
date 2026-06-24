@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/HoanNghi16/Devall_backend/internal/algorithm"
 	"github.com/HoanNghi16/Devall_backend/internal/course"
 	"github.com/HoanNghi16/Devall_backend/internal/user"
 	"gorm.io/driver/postgres"
@@ -38,6 +39,9 @@ func ConnectDB() (*gorm.DB, error) {
 		&course.ContentBlock{},
 		&course.Topic{},
 		&course.TopicCourse{},
+		&algorithm.Algorithm{},
+		&algorithm.SolvingHistory{},
+		&algorithm.Tag{},
 	) ; err != nil{
 		return nil, fmt.Errorf("auto migrate failed: %w", err)
 	}

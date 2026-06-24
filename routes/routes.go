@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"github.com/HoanNghi16/Devall_backend/internal/algorithm"
 	"github.com/HoanNghi16/Devall_backend/internal/auth"
 	"github.com/HoanNghi16/Devall_backend/internal/course"
 	"github.com/HoanNghi16/Devall_backend/internal/user"
@@ -27,6 +28,7 @@ func SetupRouter (db *gorm.DB) *gin.Engine{
 
 	router.GET("/logout", auth.LogoutHandler)
 
+	algorithm.AlgorithmRoutes(router, db)
 	course.CourseRoutes(router, db)
 	user.UserRoutes(router, db)
 	// router.GET("/test", func ( cntx *gin.Context) {

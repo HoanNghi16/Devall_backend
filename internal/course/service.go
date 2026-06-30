@@ -33,12 +33,13 @@ func (service *Service) CourseFullService(id uint) (*Course, error) {
 	return course, nil
 }
 
-func (service *Service) MyCourseService(userID uint) ([]Course, error) {
+func (service *Service) MyCourseService(userID uint) ([]ResponseCourse, error) {
 	courses, err := service.repository.GetMyCourses(userID)
 	if err != nil {
 		return nil, err
 	}
-	return courses, nil
+	var course *Course
+	return course.ToResponseDataList(courses), nil
 }
 
 func (service *Service) CreateMyCourse(userID uint, input *RequestCourse) error {

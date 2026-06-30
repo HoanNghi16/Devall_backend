@@ -111,7 +111,7 @@ func (handler *Handler) CreateNewCourse(cntx *gin.Context){
 func (handler *Handler) MyCourses(cntx * gin.Context){
 	userID, ok := cntx.Get("userID")
 	if ok{
-		courses,err := handler.service.repository.GetMyCourses(userID.(uint))
+		courses,err := handler.service.MyCourseService(userID.(uint))
 		if err != nil{
 			cntx.JSON(400, gin.H{
 				"message": err,

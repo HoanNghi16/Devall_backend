@@ -19,6 +19,7 @@ type Course struct {
 	IsPublished 	 bool `gorm:"default:false" json:"is_published"`
 	Lessons []Lesson `gorm:"foreignKey:CourseId" json:"lessons"`
 	Topics []TopicCourse `gorm:"foreignKey:CourseID" json:"topics"`
+	Password string
 	Level string `gorm:"default:easy" json:"level"`
 }
 

@@ -33,7 +33,7 @@ type ResponseCourse struct { //Để json.Marshal() trả về đúng tên field
 
 type RequestContentBlock struct {
 	Position 	uint `json:"position"`
-	BlockType 	string  `json:"block_type" binding:"oneof=text video visualizer codeEditor codePreview"` // "text" | "video" | "visualizer" | "codeEditor" | "codePreview"
+	BlockType 	string  `json:"block_type" binding:"oneof=text media visualizer codeEditor codePreview"` // "text" | "video" | "visualizer" | "codeEditor" | "codePreview"
 	Data 		datatypes.JSON `json:"data"`
 }
 

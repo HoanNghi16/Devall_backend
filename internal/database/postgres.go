@@ -6,6 +6,7 @@ import (
 
 	"github.com/HoanNghi16/Devall_backend/internal/algorithm"
 	"github.com/HoanNghi16/Devall_backend/internal/course"
+	"github.com/HoanNghi16/Devall_backend/internal/media"
 	"github.com/HoanNghi16/Devall_backend/internal/user"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -42,6 +43,7 @@ func ConnectDB() (*gorm.DB, error) {
 		&algorithm.Algorithm{},
 		&algorithm.SolvingHistory{},
 		&algorithm.Tag{},
+		&media.Media{},
 	) ; err != nil{
 		return nil, fmt.Errorf("auto migrate failed: %w", err)
 	}

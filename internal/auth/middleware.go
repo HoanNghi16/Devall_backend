@@ -18,7 +18,7 @@ func AuthRequired() gin.HandlerFunc{
 			return 
 		}
 
-		claims, err := VerifyToken(access, "SECRET_KEY")
+		claims, err := VerifyToken(access, "SECRET_TOKEN_KEY")
 		
 		if err != nil{
 			cntx.JSON(http.StatusUnauthorized, gin.H{

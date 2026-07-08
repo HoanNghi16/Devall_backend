@@ -20,7 +20,7 @@ func (h *Handler) ProfileHandler(cntx *gin.Context){
  	userID, ok := cntx.Get("userID") ;
 	if !ok{
 		cntx.JSON(http.StatusNoContent, gin.H{
-			"message": "Không tìm thấy user",
+			"message": "Bạn chưa đăng nhập!",
 		})
 		return
 	}

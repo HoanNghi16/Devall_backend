@@ -59,7 +59,11 @@ func (s *Service) Login(input *LoginRequest) (*TokenResponse, error) {
 	user, _ := s.repository.FindByEmail(input.Email)
 
 	if user == nil{
-		return nil,errors.New("Email không tồn tại!")
+		user, _ = s.repository.FindByPhone(input.Phone)
+		if (user == nil){
+			return nil,errors.New("Email và số điện thoại không tồn tại!")
+		}
+		
 	}
 	if err:= bcrypt.CompareHashAndPassword(
 		[]byte(user.Password), []byte(input.Password),
@@ -79,15 +83,14 @@ func (s *Service) Login(input *LoginRequest) (*TokenResponse, error) {
 }
 
 
-func (s *Service) GetProfile(id uint)(*ProfileResponse,error){
+func (s *Service) GetProfile(id uint)(*UserResponse,error){
 	user, err := s.repository.FindByID(id)
 
 	if err != nil{
 		return nil,err
 	}
 
-	profile := ProfileResponse{
-		ID: user.ID,
+	profile := UserResponse{
 		Email: user.Email,
 		Role: user.Role,
 		CreatedAt: user.CreatedAt,

@@ -13,7 +13,7 @@ func BlackListToken(token string){
 }
 
 func GenerateAccess(userID uint, role string) (string,error) {
-	secret_key := []byte(os.Getenv("SECRET_KEY"))
+	secret_key := []byte(os.Getenv("SECRET_TOKEN_KEY"))
 	claims := CustomClaims{
 		UserID:           userID,
 		Role:             role,

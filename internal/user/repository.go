@@ -25,9 +25,10 @@ func (r *Repository) Create(user *User, profile * Profile) error{
 func (r *Repository) FindByPhone(phone string)( *User, error){
 	var user User
 
-	if err:= r.db.Where("phone_number= ?", phone).First(&user).Error; err != nil{
+	if err:= r.db.Joins("Profile").Where(`"Profile".phone_number=?`, phone).First(&user).Error; err != nil{
 		return nil, err
 	}
+
 	return &user, nil
 }
 

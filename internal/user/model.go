@@ -14,11 +14,11 @@ type User struct {
 }
 
 type Profile struct{
-	ID uint `gorm:"primaryKey;autoIncrement"`
-	UserID uint `gorm:"unique;not null"`
-	EXP uint64 `gorm:"default:0"`
-	Avatar string `gorm:"default:''"`
-	Name string `gorm:"default:''"`
-	DateOfBirth time.Time
-	PhoneNumber string
+	ID uint `gorm:"primaryKey;autoIncrement" json:"id"`
+	UserID uint `gorm:"unique;not null" json:"user_id"`	
+	EXP uint64 `gorm:"default:0" json:"exp"`
+	Avatar string `gorm:"default:''" json:"avatar"`
+	Name string `gorm:"default:''" json:"name"`
+	DateOfBirth time.Time `json:"date_of_birth"`
+	PhoneNumber string `json:"phone_number"`
 }

@@ -12,10 +12,10 @@ func NewRepository(db *gorm.DB)(*Repository){
 	}
 }
 
-func (repository *Repository) CreateMedia(media *Media)(bool, error){
+func (repository *Repository) CreateMedia(media *Media)(error){
 	err := repository.db.Create(media).Error
 	if err == nil{
-		return true, nil
+		return nil
 	}
-	return false, err
+	return err
 }

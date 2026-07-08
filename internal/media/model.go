@@ -10,7 +10,7 @@ type Media struct {
 	Name string `gorm:"not null" json:"name"`
 	PublicID string `gorm:"not null;unique" json:"public_id"`
 	URL string `gorm:"not null" json:"url"`
-	Type string `gorm:"not null" json:"media_type"`
+	Type string `gorm:"not null" json:"media_type"` // video || text || image
 	UploadedByID uint `gorm:"not null" json:"uploaded_by_id"`
 	UploadedBy user.User `gorm:"foreignKey:UploadedByID" json:"uploaded_by"`
 }

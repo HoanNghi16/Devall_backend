@@ -35,6 +35,9 @@ func (repository *Repository)GetCourse(id uint)(*Course, error){
 	return &course, nil
 }
 
+
+
+
 func (repository *Repository)FindAll(cursor uint, topicIDs []uint, level string )([]Course, error){
 	var courses []Course
 	query := repository.db.Joins("Author").Where("courses.id > ? and courses.is_published = true", cursor)
@@ -74,6 +77,8 @@ func (repository *Repository) CreateMyCourse(course *Course)(error){
 	return repository.db.Create(course).Error
 }
 
+
+// Lấy danh sách Topic
 func (repository *Repository) GetTopics ()([]Topic,error){
 	var topics []Topic
 	err:=repository.db.Find(&topics).Error

@@ -25,6 +25,7 @@ func (service *Service) ListCourseService(cursor uint, topicIDs []uint, level st
 	return course.ToResponseDataList(courses), nil
 }
 
+
 func (service *Service) CourseFullService(id uint) (*Course, error) {
 	course, err := service.repository.GetCourse(id)
 	if err != nil {
@@ -32,6 +33,8 @@ func (service *Service) CourseFullService(id uint) (*Course, error) {
 	}
 	return course, nil
 }
+
+
 
 func (service *Service) MyCourseService(userID uint) ([]ResponseCourse, error) {
 	courses, err := service.repository.GetMyCourses(userID)
@@ -41,6 +44,8 @@ func (service *Service) MyCourseService(userID uint) ([]ResponseCourse, error) {
 	var course *Course
 	return course.ToResponseDataList(courses), nil
 }
+
+
 
 func (service *Service) CreateMyCourse(userID uint, input *RequestCourse) error {
 	userRepository := user.NewRepository(service.repository.db)
@@ -55,4 +60,14 @@ func (service *Service) CreateMyCourse(userID uint, input *RequestCourse) error 
 		return err
 	}
 	return nil
+}
+
+
+func (service *Service) GetTopics ()([]Topic, error){
+	topcics, err := service.repository.GetTopics()
+
+	if err != nil{
+		return nil, errors.New("Không tìm thấy dữ liệu")
+	}
+	return topcics, nil
 }

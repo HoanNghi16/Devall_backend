@@ -121,3 +121,16 @@ func (handler *Handler) MyCourses(cntx * gin.Context){
 		cntx.JSON(200, courses)
 	}
 }
+
+
+
+func (handler *Handler) Topics (cntx *gin.Context){
+	topics, err := handler.service.GetTopics()
+
+	if err != nil{
+		cntx.JSON(404, gin.H{"message":  err.Error()})
+		return
+	}
+
+	cntx.JSON(200, topics)
+}

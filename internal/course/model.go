@@ -42,7 +42,7 @@ type ContentBlock struct {
 
 type Topic struct{
 	ID uint `gorm:"primaryKey;autoIncrement" json:"id"`
-	Name string `gorm:"not null"`
+	Name string `gorm:"not null" json:"name"`
 }
 
 type TopicCourse struct{

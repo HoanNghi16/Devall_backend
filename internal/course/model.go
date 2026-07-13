@@ -28,7 +28,7 @@ type Lesson struct{
 	CourseID 	uint `gorm:"not null" json:"course_id"`
 	Position 	uint `json:"position"`
 	Name 	 	string `gorm:"not null" json:"name"`
-	ContentBlocks []ContentBlock `gorm:"foreignKet:LessonID" json:"content_blocks"`
+	ContentBlocks []ContentBlock `gorm:"foreignKey:LessonID" json:"content_blocks"`
 }
 
 type ContentBlock struct {

@@ -9,7 +9,7 @@ import (
 // Dùng để lấy đầu vào filter
 type CourseFilter struct{
 	TopicIDs 	[]uint `form:"topics"`
-	Level 		string `form:"level" binding:"omitempty,oneof=easy medium hard advanced"`
+	Level 		string `form:"level" binding:"omitempty,oneof=easy medium hard advanced all"`
 	Cursor 		uint `form:"cursor"`
 }
 

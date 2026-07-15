@@ -42,7 +42,7 @@ func (repository *Repository)FindAll(cursor uint, topicIDs []uint, level string 
 	var courses []Course
 	query := repository.db.Joins("Author").Where("courses.id > ? and courses.is_published = true", cursor)
 	if len(topicIDs) > 0{
-		query = query.Joins("join topic_courses tc on tc.course_id = courses.id").Where("tc.topic_id in ?", topicIDs).Distinct("courses.id")
+		query = query.Joins("join topic_courses tc on tc.course_id = courses.id").Where("tc.topic_id in ?", topicIDs).Distinct("courses.*")
 	}
 
 	if level != "" && level != "all"{

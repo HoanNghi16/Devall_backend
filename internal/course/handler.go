@@ -1,6 +1,8 @@
 package course
 
 import (
+	"fmt"
+	"io"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -77,7 +79,10 @@ func (handler *Handler) GetFullCourseHandler(cntx *gin.Context){
 func (handler *Handler) CreateNewCourse(cntx *gin.Context){
 	var newCourse RequestCourse
 
-	if err := cntx.ShouldBind(&newCourse); err != nil{
+	body, _ := io.ReadAll(cntx.Request.Body)
+	fmt.Println(string(body))
+
+	if err := cntx.ShouldBindJSON(&newCourse); err != nil{
 		cntx.JSON(400, gin.H{
 			"message": err.Error(),
 		})

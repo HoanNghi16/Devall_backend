@@ -91,6 +91,7 @@ func (s *Service) GetProfile(id uint)(*UserResponse,error){
 	}
 
 	profile := UserResponse{
+		ID: user.ID,
 		Email: user.Email,
 		Role: user.Role,
 		CreatedAt: user.CreatedAt,

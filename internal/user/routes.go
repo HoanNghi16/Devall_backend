@@ -14,6 +14,7 @@ func UserRoutes(router *gin.Engine, db *gorm.DB){
 	//Public handler
 	router.POST("/user/register", handler.RegisterHandler)
 	router.POST("/user/login", handler.LoginHandler)
+	router.GET("/user/refresh", handler.RefreshTokenHandler)
 
 	protected := router.Group("/user", auth.AuthRequired())
 	{

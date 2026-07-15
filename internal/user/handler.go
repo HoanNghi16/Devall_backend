@@ -3,6 +3,7 @@ package user
 import (
 	"net/http"
 
+	"github.com/HoanNghi16/Devall_backend/internal/auth"
 	"github.com/gin-gonic/gin"
 )
 
@@ -80,4 +81,37 @@ func (h *Handler) LoginHandler(cntx *gin.Context){
 	cntx.JSON(200, gin.H{
 		"message": "Đăng nhập thành công",
 	})
+}
+
+
+func (h *Handler)RefreshTokenHandler(cntx *gin.Context){
+	refresh, err := cntx.Cookie("refresh")
+	if err == nil{
+		claims, errVer := auth.VerifyToken(refresh, "SECRET_REFRESH_KEY")
+		if errVer != nil{
+			cntx.JSON(401, gin.H{"message": "Token không hợp lệ!"})
+			return
+		}
+
+		user, errFind := h.service.GetProfile(claims.UserID)
+
+		if errFind != nil{
+			cntx.JSON(500, gin.H{"message": "Lỗi database!"})
+			return
+		}
+
+		newAccess, errGen := auth.GenerateAccess(user.ID, user.Role)
+
+		if errGen != nil{
+			cntx.JSON(500, gin.H{"message": errGen.Error()})
+			return
+		}
+
+		cntx.SetCookie("access", newAccess, 15*60, "/", "", false, true)
+		cntx.JSON(201,gin.H{"message": "Đã làm mới phiên đăng nhập!"})
+
+		return
+		
+	}
+	cntx.JSON(400, gin.H{"message": "Không tìm thấy token"})
 }

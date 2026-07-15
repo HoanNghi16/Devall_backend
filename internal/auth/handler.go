@@ -23,3 +23,5 @@ func LogoutHandler(cntx *gin.Context) {
 		"message": "Bạn chưa đăng nhập!",
 	})
 }
+
+

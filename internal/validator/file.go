@@ -2,23 +2,23 @@ package validator
 
 import (
 	"errors"
+	"log"
 	"mime/multipart"
 	"net/http"
 )
 
-func ValidateAndOpenFile(fileHeader *multipart.FileHeader, maxSize int64, allowedMimes []string)(multipart.File, error){
+func ValidateFile(fileHeader *multipart.FileHeader, maxSize int64, allowedMimes []string)( error){
 	if fileHeader == nil{
-		return nil,errors.New("File không tồn tại!")
+		return errors.New("File không tồn tại!")
 	}
 	if fileHeader.Size > maxSize {
-		return nil,errors.New("Dung lượng file quá lớn!")
+		return errors.New("Dung lượng file quá lớn!")
 	}
 
 	file, err:= fileHeader.Open()
 	if err != nil{
-		return nil,errors.New("Mở file thất bại!")
+		return errors.New("Mở file thất bại!")
 	}
-	defer file.Close()
 
 	buf := make([]byte, 512)
 
@@ -26,11 +26,14 @@ func ValidateAndOpenFile(fileHeader *multipart.FileHeader, maxSize int64, allowe
 
 	mime := http.DetectContentType(buf)
 
+	log.Println("Detected MIME:", mime)
+
 	for _,allowedMime := range allowedMimes{
 		if mime == allowedMime{
-			return file,nil
+			return nil
 		}
 	}
+	defer file.Close()
 	
-	return nil,errors.New("Định dạng file này không được hỗ trợ!")
+	return errors.New("Định dạng file này không được hỗ trợ!")
 }

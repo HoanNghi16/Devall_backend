@@ -52,6 +52,7 @@ type RequestCourse struct {
 	Lessons []RequestLesson `json:"lessons" binding:"required,min=1,dive"`
 	Topics []uint `json:"topics"`
 	Level string `json:"level" binding:"oneof=easy medium hard advanced"` // easy | medium | hard | advanced
+	Password string
 }
 
 func (request *RequestCourse) ParseContentBlocks(requestBlocks []RequestContentBlock) []ContentBlock{

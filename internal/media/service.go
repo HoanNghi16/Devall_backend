@@ -2,7 +2,9 @@ package media
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"log"
 	"log/slog"
 
 	"github.com/HoanNghi16/Devall_backend/internal/validator"
@@ -31,10 +33,21 @@ func (service *Service) UploadMedia(ctx context.Context,request *MediaRequest, u
 		maxSize = 10<<20
 	}
 
-	file, err := validator.ValidateAndOpenFile(request.File, int64(maxSize), allowed)
+	err := validator.ValidateFile(request.File, int64(maxSize), allowed)
 	if err != nil{
 		return "", err
 	}
+
+	file, openErr := request.File.Open()
+
+	if openErr != nil{
+		return "", errors.New("Mở file thất bại!")
+	}
+
+	log.Printf("%+v\n", uploader.UploadParams{
+		Folder: "Devall_medias",
+		ResourceType: request.Type,
+	})
 
 	result, err := service.cld.Upload.Upload(ctx, file, uploader.UploadParams{
 		Folder: "Devall_medias",
@@ -44,6 +57,9 @@ func (service *Service) UploadMedia(ctx context.Context,request *MediaRequest, u
 	if err != nil{
 		return "", fmt.Errorf("upload thất bại: %w", err)
 	}
+
+	log.Print(result)
+	log.Printf("request.Type = %q", request.Type)
 
 	name := result.OriginalFilename
 
@@ -75,5 +91,6 @@ func (service *Service) UploadMedia(ctx context.Context,request *MediaRequest, u
 		}
 		return "", fmt.Errorf("Upload thất bại! %w",err)
 	}
+	defer file.Close()
 	return media.URL, nil
 }

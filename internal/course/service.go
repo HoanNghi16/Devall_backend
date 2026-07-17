@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/HoanNghi16/Devall_backend/internal/user"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type Service struct {
@@ -54,6 +55,16 @@ func (service *Service) CreateMyCourse(userID uint, input *RequestCourse) error 
 	if err != nil{
 		return errors.New("ID người dùng không hợp lệ!")
 	}
+
+	hash, hashErr := bcrypt.GenerateFromPassword(
+		[]byte(input.Password),
+		bcrypt.DefaultCost,
+	)
+
+	if hashErr != nil{
+		return errors.New("Lỗi hệ thống xử lý mật khẩu!")
+	}
+	input.Password = string(hash)
 	course := input.ParseCourse()
 	course.Author = user.Profile
 	if err := service.repository.CreateMyCourse(&course); err != nil {

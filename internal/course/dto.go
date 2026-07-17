@@ -37,6 +37,7 @@ type RequestContentBlock struct {
 	Data 		datatypes.JSON `json:"data"`
 }
 
+
 type RequestLesson struct{
 	Position 	uint `json:"position"`
 	Name 	 	string `json:"name" binding:"required"`

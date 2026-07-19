@@ -51,6 +51,20 @@ type TopicCourse struct{
 	Topic Topic `gorm:"foreignKey:TopicID"`
 }
 
+type CourseUser struct{
+	CourseID uint `gorm:"primaryKey"`
+	UserID uint	`gorm:"primaryKey"`
+	Course Course `gorm:"foreignKey:CourseID" json:"course"`
+	User user.User `gorm:"foreignKey:UserID" json:"user"`
+	Progress float32 `gorm:"not null; check: progress >= 0 and progress <= 1" json:"progress"`
+	CreatedAt time.Time `gorm:"not null" json:"created_at"`
+	UpdatedAt time.Time `gorm:"not null" json:"updated_at"`
+	DeletedAt time.Time `gorm:"null" json:"deleted_at"`
+	IsActive bool `gorm:"default:true" json:"is_active"` //Dùng để hiển thị trong trang lịch sử hoặc ko
+	IsMarked bool `gorm:"default:false" json:"is_marked"`
+}
+
+
 
 func (c *Course) ToResponseData (course Course) (*ResponseCourse){
 	return &ResponseCourse{
@@ -66,6 +80,9 @@ func (c *Course) ToResponseData (course Course) (*ResponseCourse){
 		},
 	}
 }
+
+
+
 
 func (c *Course)ToResponseDataList(coursesList []Course)([]ResponseCourse){
 	result := make([]ResponseCourse, len(coursesList))

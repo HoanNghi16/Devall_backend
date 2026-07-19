@@ -33,16 +33,21 @@ func ConnectDB() (*gorm.DB, error) {
 
 	//Nếu error khi auto migrate -> trả về nil, error
 	if err := db.AutoMigrate(
+		//User package
 		&user.User{}, 
 		&user.Profile{},
+		//Course package
 		&course.Course{},
 		&course.Lesson{},
 		&course.ContentBlock{},
 		&course.Topic{},
 		&course.TopicCourse{},
+		&course.CourseUser{},
+		//Algorithm package
 		&algorithm.Algorithm{},
 		&algorithm.SolvingHistory{},
 		&algorithm.Tag{},
+		//Media package
 		&media.Media{},
 	) ; err != nil{
 		return nil, fmt.Errorf("auto migrate failed: %w", err)

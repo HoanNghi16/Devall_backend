@@ -27,11 +27,12 @@ func (service *Service) ListCourseService(cursor uint, topicIDs []uint, level st
 }
 
 
-func (service *Service) CourseFullService(id uint) (*Course, error) {
-	course, err := service.repository.GetCourse(id)
+func (service *Service) CourseFullService(id uint, userID uint) (*Course, error) {
+	course, err := service.repository.GetCourse(id, userID)
 	if err != nil {
 		return nil, err
 	}
+	course.Password = ""
 	return course, nil
 }
 
@@ -81,4 +82,8 @@ func (service *Service) GetTopics ()([]Topic, error){
 		return nil, errors.New("Không tìm thấy dữ liệu")
 	}
 	return topcics, nil
+}
+
+func(service *Service) UpdateCoureUser(userID uint)(error){
+	return nil
 }

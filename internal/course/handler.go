@@ -44,6 +44,7 @@ func (handler *Handler) CoursesHandler(cntx *gin.Context) {
 
 // GET /course/:id
 func (handler *Handler) GetFullCourseHandler(cntx *gin.Context){
+	
 	id, ok := cntx.Params.Get("id")
 	if !ok{
 		cntx.JSON(400, gin.H{
@@ -61,7 +62,12 @@ func (handler *Handler) GetFullCourseHandler(cntx *gin.Context){
 		return
 	}
 
-	course, err := handler.service.CourseFullService(uint(id1))
+	userID, ok := cntx.Get("userID")
+	if !ok{
+		userID = uint(0)
+	}
+
+	course, err := handler.service.CourseFullService(uint(id1), userID.(uint))
 	if err!=nil{
 		cntx.JSON(404, gin.H{
 			"message": "Không tìm thấy khóa học",

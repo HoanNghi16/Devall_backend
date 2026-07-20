@@ -19,6 +19,7 @@ type Course struct {
 	IsPublished 	 bool `gorm:"default:false" json:"is_published"`
 	Lessons []Lesson `gorm:"foreignKey:CourseId" json:"lessons"`
 	Topics []TopicCourse `gorm:"foreignKey:CourseID" json:"topics"`
+	CourseUsers []CourseUser `gorm:"foreignKey:CourseID" json:"course_users"` //Quan hệ giữa khóa học và người dùng
 	Password string
 	Level string `gorm:"default:easy" json:"level"`
 }
@@ -52,16 +53,16 @@ type TopicCourse struct{
 }
 
 type CourseUser struct{
-	CourseID uint `gorm:"primaryKey"`
-	UserID uint	`gorm:"primaryKey"`
-	Course Course `gorm:"foreignKey:CourseID" json:"course"`
-	User user.User `gorm:"foreignKey:UserID" json:"user"`
-	Progress float32 `gorm:"not null; check: progress >= 0 and progress <= 1" json:"progress"`
+	CourseID  uint `gorm:"primaryKey"`
+	UserID    uint	`gorm:"primaryKey"`
+	Course    Course `gorm:"foreignKey:CourseID" json:"course"`
+	User      user.User `gorm:"foreignKey:UserID" json:"user"`
+	Progress  float32 `gorm:"not null; check: progress >= 0 and progress <= 1" json:"progress"`
 	CreatedAt time.Time `gorm:"not null" json:"created_at"`
 	UpdatedAt time.Time `gorm:"not null" json:"updated_at"`
 	DeletedAt time.Time `gorm:"null" json:"deleted_at"`
-	IsActive bool `gorm:"default:true" json:"is_active"` //Dùng để hiển thị trong trang lịch sử hoặc ko
-	IsMarked bool `gorm:"default:false" json:"is_marked"`
+	IsActive  bool `gorm:"default:true" json:"is_active"` //Dùng để hiển thị trong trang lịch sử hoặc ko
+	IsMarked  bool `gorm:"default:false" json:"is_marked"`
 }
 
 

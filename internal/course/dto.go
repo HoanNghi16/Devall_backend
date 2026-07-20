@@ -18,6 +18,12 @@ type ResponseAuthor struct{
 	Avatar string `json:"avatar"`
 }
 
+
+type RequestCourseUser struct{
+	
+}
+
+
 type ResponseCourse struct { //Để json.Marshal() trả về đúng tên fields
 	ID               uint  `json:"id"`
 	Name             string`json:"name"`
@@ -102,4 +108,5 @@ func (request *RequestCourse) ParseCourse() Course{
 		Topics: request.ParseTopics(request.Topics),
 	}
 }
+
 

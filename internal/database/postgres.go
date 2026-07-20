@@ -36,6 +36,7 @@ func ConnectDB() (*gorm.DB, error) {
 		//User package
 		&user.User{}, 
 		&user.Profile{},
+	
 		//Course package
 		&course.Course{},
 		&course.Lesson{},
@@ -43,6 +44,7 @@ func ConnectDB() (*gorm.DB, error) {
 		&course.Topic{},
 		&course.TopicCourse{},
 		&course.CourseUser{},
+
 		//Algorithm package
 		&algorithm.Algorithm{},
 		&algorithm.SolvingHistory{},

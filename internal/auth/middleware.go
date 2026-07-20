@@ -34,3 +34,24 @@ func AuthRequired() gin.HandlerFunc{
 		cntx.Next()
 	}
 }
+
+func OptionalAuth() gin.HandlerFunc{
+	return func(cntx *gin.Context){
+		access, err := cntx.Cookie("access")
+
+		if err != nil{
+			cntx.Next()
+		}
+
+		claims, err := VerifyToken(access, "SECRET_TOKEN_KEY")
+		
+		if err != nil{
+			cntx.Next()
+		}
+
+		cntx.Set("userID", claims.UserID)
+		cntx.Set("role",claims.Role)
+
+		cntx.Next()
+	}
+}

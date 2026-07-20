@@ -6,6 +6,7 @@ import (
 
 	"github.com/HoanNghi16/Devall_backend/internal/user"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type Repository struct {
@@ -22,10 +23,17 @@ func NewRepository(db *gorm.DB) (*Repository){
 //Dùng Preload để lấy Danh sách bài học trước
 //Dùng Preload để lấy ContentBlocks trong Lessons
 //->Find để đưa vào course
-func (repository *Repository)GetCourse(id uint)(*Course, error){
+func (repository *Repository)GetCourse(id uint, userID uint)(*Course, error){
 	var course Course
-	log.Println(id)
-	err := repository.db.Preload("Lessons").Preload("Lessons.ContentBlocks").Where("is_published = true").Find(&course, id).Error
+	log.Println(userID)
+	query := repository.db.Preload("Lessons").Preload("Lessons.ContentBlocks")
+
+	if (userID != 0){
+		query = query.Preload("CourseUsers", "user_id = ?", userID)
+	}
+
+	err := query.Where("is_published = true").Find(&course, id).Error
+
 	if err != nil{
 		return nil, err
 	}
@@ -84,3 +92,25 @@ func (repository *Repository) GetTopics ()([]Topic,error){
 	err:=repository.db.Find(&topics).Error
 	return topics, err
 }
+
+
+// Cập nhật khóa học
+func (repository *Repository) UpdateCourseUser(coureUser *CourseUser)(bool){
+	err := repository.db.Clauses(clause.OnConflict{
+		Columns: []clause.Column{
+			{Name: "course_id"},
+			{Name: "user_id"},
+		},
+		DoUpdates: clause.AssignmentColumns([]string{
+			"progress",
+			"updated_at",
+			"is_marked",
+		}),
+	}).Create(coureUser).Error
+
+	if err != nil{
+		return false
+	}
+
+	return true
+}	

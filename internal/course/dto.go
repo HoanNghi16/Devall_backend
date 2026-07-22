@@ -20,9 +20,15 @@ type ResponseAuthor struct{
 
 
 type RequestCourseUser struct{
-	
+	CourseID  		uint `json:"course_id"`
+	Progress  		*float32 `json:"progress" binding:"omitempty"`
+	CreatedAt 		*time.Time `json:"created_at" binding:"omitempty"`
+	UpdatedAt 		*time.Time `json:"updated_at" binding:"omitempty"`
+	DeletedAt 		*time.Time `json:"deleted_at" binding:"omitempty"`
+	IsActive  		*bool `json:"is_active" binding:"omitempty"` //Dùng để hiển thị trong trang lịch sử hoặc ko
+	IsMarked  		*bool `json:"is_marked" binding:"omitempty"`
+	LastAccessAt	*time.Time `json:"last_access_at" binding:"omitempty"`
 }
-
 
 type ResponseCourse struct { //Để json.Marshal() trả về đúng tên fields
 	ID               uint  `json:"id"`
@@ -32,6 +38,7 @@ type ResponseCourse struct { //Để json.Marshal() trả về đúng tên field
 	ShortDescription string `json:"short_description"`
 	CreatedAt        time.Time `json:"created_at"`
 	UpdatedAt        time.Time `json:"updated_at"`
+	CourseUser  	*CourseUser `json:"course_user"`
 }
 
 
@@ -107,6 +114,57 @@ func (request *RequestCourse) ParseCourse() Course{
 		Avatar: request.Avatar,
 		Topics: request.ParseTopics(request.Topics),
 	}
+}
+
+func (request *RequestCourseUser)ParseCourseUser() (CourseUser, []string){
+	now := time.Now()
+	var columns []string
+
+	createdAt := now
+	if request.CreatedAt != nil{
+		createdAt = *request.CreatedAt
+		columns = append(columns, "created_at")
+	}
+
+	deletedAt := request.DeletedAt
+
+	isMarked := false
+	if request.IsMarked != nil{
+		columns = append(columns, "is_marked")
+		isMarked = *request.IsMarked
+	}
+
+	progress := float32(0) 
+
+	if request.Progress != nil{
+		progress = *request.Progress
+		columns = append(columns, "progress")
+	}
+
+	updatedAt := now
+
+	isActive := true
+	if request.IsActive != nil{
+		isActive = *request.IsActive
+		columns = append(columns, "is_active")
+	}
+
+	lastAcccessAt := now
+	if request.LastAccessAt != nil {
+		lastAcccessAt = *request.LastAccessAt
+		columns = append(columns, "progress")
+	}
+
+	return CourseUser{
+		CourseID: request.CourseID,
+		DeletedAt: deletedAt,
+		CreatedAt: createdAt,
+		IsMarked: isMarked,
+		Progress: progress,
+		UpdatedAt: updatedAt,
+		IsActive: isActive,
+		LastAccessAt: lastAcccessAt,
+	},columns
 }
 
 

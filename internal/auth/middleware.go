@@ -44,11 +44,10 @@ func OptionalAuth() gin.HandlerFunc{
 		}
 
 		claims, err := VerifyToken(access, "SECRET_TOKEN_KEY")
-		
 		if err != nil{
 			cntx.Next()
+			return
 		}
-
 		cntx.Set("userID", claims.UserID)
 		cntx.Set("role",claims.Role)
 

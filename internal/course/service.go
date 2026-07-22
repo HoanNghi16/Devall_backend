@@ -84,6 +84,39 @@ func (service *Service) GetTopics ()([]Topic, error){
 	return topcics, nil
 }
 
-func(service *Service) UpdateCoureUser(userID uint)(error){
-	return nil
+func(service *Service) UpdateCoureUser(userID uint, input *RequestCourseUser)(error){
+	
+	courseUser, columns := input.ParseCourseUser()
+
+	courseUser.UserID = userID
+
+	ok := service.repository.UpdateCourseUser(&courseUser, columns)
+
+	if ok{
+		return nil
+	}
+
+	return errors.New("Thêm hoặc sửa dữ liệu thất bại!")
+}
+
+func(service *Service) GetHistories(userID uint)([]ResponseCourse, error){
+	courseUsers, err := service.repository.SelectHistories(userID)
+	if err != nil{
+		return nil,err
+	}
+
+	responseCourses := make([]ResponseCourse, len(courseUsers))
+
+	for index, courseUser := range courseUsers{
+		responseCourses[index] = ResponseCourse{
+			ID: courseUser.CourseID ,
+			Name: courseUser.Course.Name,
+			Avatar: courseUser.Course.Avatar,
+			Author: ResponseAuthor{Name: courseUser.Course.Author.Name, Avatar: courseUser.Course.Author.Avatar},
+			ShortDescription: courseUser.Course.ShortDescription,
+			CourseUser: &courseUser,
+		}
+	}
+
+	return responseCourses, nil
 }

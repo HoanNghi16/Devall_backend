@@ -3,6 +3,7 @@ package course
 import (
 	"errors"
 	"log"
+	"time"
 
 	"github.com/HoanNghi16/Devall_backend/internal/user"
 	"gorm.io/gorm"
@@ -28,18 +29,30 @@ func (repository *Repository)GetCourse(id uint, userID uint)(*Course, error){
 	log.Println(userID)
 	query := repository.db.Preload("Lessons").Preload("Lessons.ContentBlocks")
 
-	if (userID != 0){
-		query = query.Preload("CourseUsers", "user_id = ?", userID)
-	}
+	err := query.Where("is_published = true").First(&course, id).Error
 
-	err := query.Where("is_published = true").Find(&course, id).Error
+	now := time.Now()
 
 	if err != nil{
-		return nil, err
-	}
-	if course.ID == 0{
 		return nil, errors.New("Không tìm thấy khóa học!")
 	}
+
+	if (userID != 0){
+		var courseUser CourseUser
+		err := repository.db.Where("course_id = ? and user_id = ?", course.ID, userID).First(&courseUser).Error
+
+		if errors.Is(err, gorm.ErrRecordNotFound){
+			courseUser.CourseID = course.ID
+			courseUser.UserID = userID
+			courseUser.LastAccessAt = now
+			repository.db.Create(&courseUser) // Nếu chưa thấy thì create
+		}else{
+			courseUser.LastAccessAt = now
+			repository.db.Model(&courseUser).UpdateColumn("last_access_at", now) // Nếu thấy courseUser => Người dùng từng truy cập => udpdate last_access_at 
+		}
+		course.CourseUsers = []CourseUser{courseUser}
+	}
+
 	return &course, nil
 }
 
@@ -95,17 +108,13 @@ func (repository *Repository) GetTopics ()([]Topic,error){
 
 
 // Cập nhật khóa học
-func (repository *Repository) UpdateCourseUser(coureUser *CourseUser)(bool){
+func (repository *Repository) UpdateCourseUser(coureUser *CourseUser, columns []string)(bool){
 	err := repository.db.Clauses(clause.OnConflict{
 		Columns: []clause.Column{
 			{Name: "course_id"},
 			{Name: "user_id"},
 		},
-		DoUpdates: clause.AssignmentColumns([]string{
-			"progress",
-			"updated_at",
-			"is_marked",
-		}),
+		DoUpdates: clause.AssignmentColumns(columns),
 	}).Create(coureUser).Error
 
 	if err != nil{
@@ -114,3 +123,13 @@ func (repository *Repository) UpdateCourseUser(coureUser *CourseUser)(bool){
 
 	return true
 }	
+
+func (repostiory *Repository) SelectHistories(userID uint)([]CourseUser, error){
+	var courseUsers []CourseUser
+	if err := repostiory.db.Where("user_id = ? and is_active = true", userID).Order("last_access_at DESC").Preload("Course").Preload("Course.Author").Find(&courseUsers).Error; err != nil{
+		log.Print(err.Error())
+		return nil, errors.New("Lỗi truy vấn dữ liệu!")
+	}
+	return courseUsers, nil
+
+}

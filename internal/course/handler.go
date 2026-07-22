@@ -140,3 +140,43 @@ func (handler *Handler) Topics (cntx *gin.Context){
 
 	cntx.JSON(200, topics)
 }
+
+
+func (handler *Handler) UpdateCourseUser(cntx *gin.Context){
+	var courseUpdate RequestCourseUser
+	if err := cntx.ShouldBindJSON(&courseUpdate); err != nil{
+		cntx.JSON(500, gin.H{"message": err.Error()})
+		return
+	}
+
+	userID, ok := cntx.Get("userID")
+	if !ok{
+		cntx.JSON(403, nil)
+		return
+	}
+
+
+	if err := handler.service.UpdateCoureUser(userID.(uint), &courseUpdate); err != nil{
+		cntx.JSON(200, gin.H{"message":err.Error()})
+		return
+	}
+
+	cntx.JSON(200, gin.H{"message": "Cập nhật thành công!"})
+}
+
+
+func (handler *Handler) GetHistory(cntx *gin.Context){
+	userID, ok := cntx.Get("userID")
+	if !ok {
+		cntx.JSON(500,nil)
+		return
+	}
+
+	courseResponse, err := handler.service.GetHistories(userID.(uint))
+	if err != nil{
+		cntx.JSON(500, gin.H{"message": err.Error()})
+		return
+	}
+
+	cntx.JSON(200, courseResponse)
+}

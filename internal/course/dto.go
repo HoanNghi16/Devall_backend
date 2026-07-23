@@ -20,7 +20,6 @@ type ResponseAuthor struct{
 
 
 type RequestCourseUser struct{
-	CourseID  		uint `json:"course_id"`
 	Progress  		*float32 `json:"progress" binding:"omitempty"`
 	CreatedAt 		*time.Time `json:"created_at" binding:"omitempty"`
 	UpdatedAt 		*time.Time `json:"updated_at" binding:"omitempty"`
@@ -156,7 +155,6 @@ func (request *RequestCourseUser)ParseCourseUser() (CourseUser, []string){
 	}
 
 	return CourseUser{
-		CourseID: request.CourseID,
 		DeletedAt: deletedAt,
 		CreatedAt: createdAt,
 		IsMarked: isMarked,

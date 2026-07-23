@@ -23,7 +23,7 @@ func CourseRoutes(router *gin.Engine, db *gorm.DB){
 	private := router.Group("/course", auth.AuthRequired())
 	{
 		private.GET("/history", handler.GetHistory)
-		private.PATCH("/:id", handler.UpdateCourseUser) //Để ghi process
+		private.PATCH("/:id", handler.UpdateCourseUser) // update quan hệ của khóa học và người dùng
 		private.POST("/my", handler.CreateNewCourse)
 		private.GET("/my", handler.MyCourses)
 	}

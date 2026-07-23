@@ -155,8 +155,16 @@ func (handler *Handler) UpdateCourseUser(cntx *gin.Context){
 		return
 	}
 
+	id, _ := cntx.Params.Get("id")
 
-	if err := handler.service.UpdateCoureUser(userID.(uint), &courseUpdate); err != nil{
+	courseID, parseErr := strconv.ParseUint(id, 10, 64)
+	if parseErr != nil{
+		cntx.JSON(400, gin.H{"message": "Mã khóa học không hợp lệ!"})
+		return
+	}
+
+
+	if err := handler.service.UpdateCoureUser(userID.(uint), uint(courseID) ,&courseUpdate); err != nil{
 		cntx.JSON(200, gin.H{"message":err.Error()})
 		return
 	}

@@ -84,11 +84,12 @@ func (service *Service) GetTopics ()([]Topic, error){
 	return topcics, nil
 }
 
-func(service *Service) UpdateCoureUser(userID uint, input *RequestCourseUser)(error){
+func(service *Service) UpdateCoureUser(userID uint, courseID uint,input *RequestCourseUser)(error){
 	
 	courseUser, columns := input.ParseCourseUser()
 
 	courseUser.UserID = userID
+	courseUser.CourseID = courseID
 
 	ok := service.repository.UpdateCourseUser(&courseUser, columns)
 

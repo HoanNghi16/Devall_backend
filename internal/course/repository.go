@@ -2,7 +2,6 @@ package course
 
 import (
 	"errors"
-	"log"
 	"time"
 
 	"github.com/HoanNghi16/Devall_backend/internal/user"
@@ -26,7 +25,6 @@ func NewRepository(db *gorm.DB) (*Repository){
 //->Find để đưa vào course
 func (repository *Repository)GetCourse(id uint, userID uint)(*Course, error){
 	var course Course
-	log.Println(userID)
 	query := repository.db.Preload("Lessons").Preload("Lessons.ContentBlocks")
 
 	err := query.Where("is_published = true").First(&course, id).Error
@@ -128,12 +126,37 @@ func (repository *Repository) UpdateCourseUser(coureUser *CourseUser, columns []
 	return true
 }	
 
-func (repostiory *Repository) SelectHistories(userID uint)([]CourseUser, error){
-	var courseUsers []CourseUser
-	if err := repostiory.db.Where("user_id = ? and is_active = true", userID).Order("last_access_at DESC").Preload("Course").Preload("Course.Author").Find(&courseUsers).Error; err != nil{
-		log.Print(err.Error())
-		return nil, errors.New("Lỗi truy vấn dữ liệu!")
-	}
-	return courseUsers, nil
+func (repostiory *Repository) SelectHistories(userID uint, cursor uint)([]Course, error){
+	var courses []Course
 
+	query := repostiory.db.Joins("Author").Joins("CourseUsers", "user_id = ?", userID).Order("last_access_at DESC")
+
+	var tempCourse *CourseUser
+	if cursor != 0{
+		if errTemp:= repostiory.db.Where("course_id = ? AND user_id =  ?", cursor, userID).Find(&tempCourse, cursor).Error; errTemp != nil{
+			if errors.Is(errTemp, gorm.ErrRecordNotFound){
+				return nil, errors.New("ID không hợp lệ!") 
+			}
+			return nil, errors.New("Kết nối server thất bại!")
+		}
+		query = query.Where("last_access_at > ", tempCourse.LastAccessAt)
+	}
+
+	if err := query.Limit(15).Find(&courses).Error; err != nil{
+		if errors.Is(err, gorm.ErrRecordNotFound){
+			return []Course{}, nil
+		}
+		return nil, err
+	}
+	return courses, nil
+}
+
+
+func (repository *Repository) GetBookmarks(userID uint, cursor uint)([]Course, error){
+	var courses []Course
+
+	if err := repository.db.Joins("CourseUsers", "user_id = ?", userID).Find(&courses).Error; err!=nil{
+		return nil, err
+	}
+	return courses, nil
 }

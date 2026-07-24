@@ -100,25 +100,13 @@ func(service *Service) UpdateCoureUser(userID uint, courseID uint,input *Request
 	return errors.New("Thêm hoặc sửa dữ liệu thất bại!")
 }
 
-func(service *Service) GetHistories(userID uint)([]ResponseCourse, error){
-	courseUsers, err := service.repository.SelectHistories(userID)
+func(service *Service) GetHistories(userID uint, cursor uint)([]ResponseCourse, error){
+	courses, err := service.repository.SelectHistories(userID, cursor)
 	if err != nil{
 		return nil,err
 	}
 
-	responseCourses := make([]ResponseCourse, len(courseUsers))
+	var course *Course
 
-	for index, courseUser := range courseUsers{
-		responseCourses[index] = ResponseCourse{
-			ID: courseUser.CourseID ,
-			Name: courseUser.Course.Name,
-			UpdatedAt: courseUser.Course.UpdatedAt,
-			Avatar: courseUser.Course.Avatar,
-			Author: ResponseAuthor{Name: courseUser.Course.Author.Name, Avatar: courseUser.Course.Author.Avatar},
-			ShortDescription: courseUser.Course.ShortDescription,
-			CourseUser: &courseUser,
-		}
-	}
-
-	return responseCourses, nil
+	return course.ToResponseDataList(courses), nil
 }

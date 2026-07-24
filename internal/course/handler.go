@@ -183,13 +183,25 @@ func (handler *Handler) UpdateCourseUser(cntx *gin.Context){
 
 
 func (handler *Handler) GetHistory(cntx *gin.Context){
+
+	id := cntx.Query("cursor")
+	
+	cursor := uint(0)
+	if id != ""{
+		termID, err := strconv.ParseUint(id, 10, 64)
+		if err != nil{
+			cntx.JSON(400, gin.H{"message": "ID không hợp lệ!"})
+		}
+		cursor = uint(termID)
+	}
+
 	userID, ok := cntx.Get("userID")
 	if !ok {
 		cntx.JSON(500,nil)
 		return
 	}
 
-	courseResponse, err := handler.service.GetHistories(userID.(uint))
+	courseResponse, err := handler.service.GetHistories(userID.(uint), cursor)
 	if err != nil{
 		cntx.JSON(500, gin.H{"message": err.Error()})
 		return

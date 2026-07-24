@@ -17,8 +17,8 @@ func NewService(repository *Repository) *Service {
 	}
 }
 
-func (service *Service) ListCourseService(cursor uint, topicIDs []uint, level string) ([]ResponseCourse, error) {
-	courses, err := service.repository.FindAll(cursor, topicIDs, level)
+func (service *Service) ListCourseService(userID ,cursor uint, topicIDs []uint, level string) ([]ResponseCourse, error) {
+	courses, err := service.repository.FindAll(userID, cursor, topicIDs, level)
 	if err != nil {
 		return nil, err
 	}
@@ -112,6 +112,7 @@ func(service *Service) GetHistories(userID uint)([]ResponseCourse, error){
 		responseCourses[index] = ResponseCourse{
 			ID: courseUser.CourseID ,
 			Name: courseUser.Course.Name,
+			UpdatedAt: courseUser.Course.UpdatedAt,
 			Avatar: courseUser.Course.Avatar,
 			Author: ResponseAuthor{Name: courseUser.Course.Author.Name, Avatar: courseUser.Course.Author.Avatar},
 			ShortDescription: courseUser.Course.ShortDescription,

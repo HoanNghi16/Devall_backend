@@ -1,6 +1,7 @@
 package course
 
 import (
+	"log"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -28,7 +29,15 @@ func (handler *Handler) CoursesHandler(cntx *gin.Context) {
 		return
 	}
 
-	courses, err := handler.service.ListCourseService(filter.Cursor, filter.TopicIDs, filter.Level)
+	userID, ok := cntx.Get("userID")
+	
+	if !ok{
+		userID = uint(0)
+	}
+
+	log.Print("userID trong cntx", userID.(uint))
+
+	courses, err := handler.service.ListCourseService(userID.(uint), filter.Cursor, filter.TopicIDs, filter.Level)
 
 	if err != nil{
 		cntx.JSON(403, gin.H{

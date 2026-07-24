@@ -69,6 +69,10 @@ type CourseUser struct{
 
 
 func (c *Course) ToResponseData (course Course) (*ResponseCourse){
+	var courseUser *CourseUser
+	if len(course.CourseUsers) == 1{
+		courseUser = &course.CourseUsers[0]
+	}
 	return &ResponseCourse{
 		ID: course.ID,
 		Avatar: course.Avatar,
@@ -80,6 +84,7 @@ func (c *Course) ToResponseData (course Course) (*ResponseCourse){
 			Name: course.Author.Name,
 			Avatar: course.Author.Avatar,
 		},
+		CourseUser: courseUser,
 	}
 }
 

@@ -59,7 +59,7 @@ func (repository *Repository)GetCourse(id uint, userID uint)(*Course, error){
 
 
 
-func (repository *Repository)FindAll(cursor uint, topicIDs []uint, level string )([]Course, error){
+func (repository *Repository)FindAll(userID uint,cursor uint, topicIDs []uint, level string )([]Course, error){
 	var courses []Course
 	query := repository.db.Joins("Author").Where("courses.id > ? and courses.is_published = true", cursor)
 	if len(topicIDs) > 0{
@@ -68,6 +68,10 @@ func (repository *Repository)FindAll(cursor uint, topicIDs []uint, level string 
 
 	if level != "" && level != "all"{
 		query = query.Where("level = ?", level)
+	}
+
+	if userID != 0{
+		query = query.Preload("CourseUsers", "user_id = ?", userID)
 	}
 
 	err := query.Find(&courses).Error

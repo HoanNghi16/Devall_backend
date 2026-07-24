@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -37,20 +38,21 @@ func AuthRequired() gin.HandlerFunc{
 
 func OptionalAuth() gin.HandlerFunc{
 	return func(cntx *gin.Context){
-		access, err := cntx.Cookie("access")
-
+		access, err := cntx.Cookie("access")	
 		if err != nil{
 			cntx.Next()
+			return
 		}
 
+		log.Print(access)
 		claims, err := VerifyToken(access, "SECRET_TOKEN_KEY")
 		if err != nil{
 			cntx.Next()
 			return
 		}
+		log.Print(claims)
 		cntx.Set("userID", claims.UserID)
 		cntx.Set("role",claims.Role)
-
 		cntx.Next()
 	}
 }

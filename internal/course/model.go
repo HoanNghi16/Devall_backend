@@ -68,33 +68,29 @@ type CourseUser struct{
 
 
 
-func (c *Course) ToResponseData (course Course) (*ResponseCourse){
-	var courseUser *CourseUser
-	if len(course.CourseUsers) == 1{
-		courseUser = &course.CourseUsers[0]
-	}
-	return &ResponseCourse{
-		ID: course.ID,
-		Avatar: course.Avatar,
-		Name: course.Name,
-		ShortDescription: course.ShortDescription,
-		CreatedAt: course.CreatedAt,
-		UpdatedAt: course.UpdatedAt,
-		Author: ResponseAuthor{
-			Name: course.Author.Name,
-			Avatar: course.Author.Avatar,
-		},
-		CourseUser: courseUser,
-	}
-}
+// func (c *Course) ToResponseData (course Course) (*ResponseCourse){
+// 	var courseUser *CourseUser
+// 	if len(course.CourseUsers) == 1{
+// 		courseUser = &course.CourseUsers[0]
+// 	}
+// 	return &ResponseCourse{
+// 		ID: course.ID,
+// 		Avatar: course.Avatar,
+// 		Name: course.Name,
+// 		ShortDescription: course.ShortDescription,
+// 		CreatedAt: course.CreatedAt,
+// 		UpdatedAt: course.UpdatedAt,
+// 		Author: ResponseAuthor{
+// 			Name: course.Author.Name,
+// 			Avatar: course.Author.Avatar,
+// 		},
+// 	}
+// }
 
 
 
 
-func (c *Course)ToResponseDataList(coursesList []Course)([]ResponseCourse){
-	result := make([]ResponseCourse, len(coursesList))
-	for i, course := range coursesList{
-		result[i] = *c.ToResponseData(course)
-	}
-	return result
-}
+// func (c *Course)ToResponseDataList(coursesList []Course)([]ResponseCourse){
+// 	result := make([]ResponseCourse, len(coursesList))
+// 	return result
+// }

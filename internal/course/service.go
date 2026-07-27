@@ -22,8 +22,7 @@ func (service *Service) ListCourseService(userID ,cursor uint, topicIDs []uint, 
 	if err != nil {
 		return nil, err
 	}
-	var course *Course
-	return course.ToResponseDataList(courses), nil
+	return courses, nil
 }
 
 
@@ -38,13 +37,12 @@ func (service *Service) CourseFullService(id uint, userID uint) (*Course, error)
 
 
 
-func (service *Service) MyCourseService(userID uint) ([]ResponseCourse, error) {
+func (service *Service) MyCourseService(userID uint) ([]Course, error) {
 	courses, err := service.repository.GetMyCourses(userID)
 	if err != nil {
 		return nil, err
 	}
-	var course *Course
-	return course.ToResponseDataList(courses), nil
+	return courses, nil
 }
 
 
@@ -100,13 +98,22 @@ func(service *Service) UpdateCoureUser(userID uint, courseID uint,input *Request
 	return errors.New("Thêm hoặc sửa dữ liệu thất bại!")
 }
 
+
+// Danh sách lịch sử
 func(service *Service) GetHistories(userID uint, cursor uint)([]ResponseCourse, error){
 	courses, err := service.repository.SelectHistories(userID, cursor)
 	if err != nil{
 		return nil,err
 	}
+	return courses, nil
+}
 
-	var course *Course
 
-	return course.ToResponseDataList(courses), nil
+//Lấy danh sách đã lưu
+func (service *Service) GetBookmarks(userID uint, cursor uint)([]ResponseCourse, error){
+	courses, err := service.repository.GetBookmarks(userID, cursor)
+	if err != nil{
+		return nil, err
+	}
+	return courses, nil
 }

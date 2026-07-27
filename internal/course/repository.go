@@ -56,10 +56,32 @@ func (repository *Repository)GetCourse(id uint, userID uint)(*Course, error){
 
 
 
+	// ID               uint  `json:"id"`
+	// Name             string`json:"name"`
+	// Avatar           string`json:"avatar"`
+	// Author           ResponseAuthor `json:"author"`
+	// ShortDescription string `json:"short_description"`
+	// CreatedAt        time.Time `json:"created_at"`
+	// UpdatedAt        time.Time `json:"updated_at"`
+	
 
-func (repository *Repository)FindAll(userID uint,cursor uint, topicIDs []uint, level string )([]Course, error){
-	var courses []Course
-	query := repository.db.Joins("Author").Where("courses.id > ? and courses.is_published = true", cursor)
+	// //Course_user
+	// Progress  		float32 `gorm:"not null; check: progress >= 0 and progress <= 1" json:"progress"`
+	// DeletedAt 		*time.Time `gorm:"null" json:"deleted_at"`
+	// IsActive  		bool `gorm:"default:true" json:"is_active"` //Dùng để hiển thị trong trang lịch sử hoặc ko
+	// IsMarked  		bool `gorm:"default:false" json:"is_marked"`
+	// LastAccessAt	time.Time `gorm:"not null; default:now()" json:"last_access_at"`
+
+
+
+func (repository *Repository)FindAll(userID uint,cursor uint, topicIDs []uint, level string )([]ResponseCourse, error){
+	var courses []ResponseCourse
+	query := repository.db.Model(&Course{}).
+			Select(`courses.id, courses.name,
+					courses.avatar, courses.short_description, 
+					cu.progress, cu.deleted_at, cu.is_active, 
+					cu.is_marked, cu.last_access_at`). //Những fields của ResponseCourse
+			Joins("Author").Where("courses.id > ? and courses.is_published = true", cursor)
 	if len(topicIDs) > 0{
 		query = query.Joins("join topic_courses tc on tc.course_id = courses.id").Where("tc.topic_id in ?", topicIDs).Distinct("courses.*")
 	}
@@ -67,12 +89,11 @@ func (repository *Repository)FindAll(userID uint,cursor uint, topicIDs []uint, l
 	if level != "" && level != "all"{
 		query = query.Where("level = ?", level)
 	}
+	
+	query = query.Joins("LEFT JOIN course_users cu on cu.course_id = courses.id", "user_id = ?", userID)
 
-	if userID != 0{
-		query = query.Preload("CourseUsers", "user_id = ?", userID)
-	}
 
-	err := query.Find(&courses).Error
+	err := query.Scan(&courses).Error
 
 	if err != nil{
 		return nil, err
@@ -81,6 +102,8 @@ func (repository *Repository)FindAll(userID uint,cursor uint, topicIDs []uint, l
 	return courses, nil
 }
 
+
+// Khoan sửa
 func (repository *Repository)GetMyCourses(userID uint)([]Course, error){
 	var courses []Course
 	var user *user.User
@@ -126,14 +149,18 @@ func (repository *Repository) UpdateCourseUser(coureUser *CourseUser, columns []
 	return true
 }	
 
-func (repostiory *Repository) SelectHistories(userID uint, cursor uint)([]Course, error){
-	var courses []Course
+func (repostiory *Repository) SelectHistories(userID uint, cursor uint)([]ResponseCourse, error){
+	var courses []ResponseCourse
 
-	query := repostiory.db.Joins("Author").Joins("CourseUsers", "user_id = ?", userID).Order("last_access_at DESC")
+	query := repostiory.db.Model(&Course{}).
+			Select(`courses.id, courses.name,
+					courses.avatar, courses.short_description, 
+					cu.progress, cu.deleted_at, cu.is_active, 
+					cu.is_marked, cu.last_access_at`).Joins("Author").Joins("JOIN course_users cu on cu.course_id = courses.id", "user_id = ?", userID).Order("last_access_at DESC")
 
 	var tempCourse *CourseUser
 	if cursor != 0{
-		if errTemp:= repostiory.db.Where("course_id = ? AND user_id =  ?", cursor, userID).Find(&tempCourse, cursor).Error; errTemp != nil{
+		if errTemp:= repostiory.db.Where("course_id = ? AND user_id =  ?", cursor, userID).Find(&tempCourse).Error; errTemp != nil{
 			if errors.Is(errTemp, gorm.ErrRecordNotFound){
 				return nil, errors.New("ID không hợp lệ!") 
 			}
@@ -142,9 +169,9 @@ func (repostiory *Repository) SelectHistories(userID uint, cursor uint)([]Course
 		query = query.Where("last_access_at > ", tempCourse.LastAccessAt)
 	}
 
-	if err := query.Limit(15).Find(&courses).Error; err != nil{
+	if err := query.Limit(15).Scan(&courses).Error; err != nil{
 		if errors.Is(err, gorm.ErrRecordNotFound){
-			return []Course{}, nil
+			return []ResponseCourse{}, nil
 		}
 		return nil, err
 	}
@@ -152,10 +179,20 @@ func (repostiory *Repository) SelectHistories(userID uint, cursor uint)([]Course
 }
 
 
-func (repository *Repository) GetBookmarks(userID uint, cursor uint)([]Course, error){
-	var courses []Course
+func (repository *Repository) GetBookmarks(userID uint, cursor uint)([]ResponseCourse, error){
+	var courses []ResponseCourse
 
-	if err := repository.db.Joins("CourseUsers", "user_id = ?", userID).Find(&courses).Error; err!=nil{
+	query := repository.db.Model(&Course{}).
+			Select(`courses.id, courses.name,
+					courses.avatar, courses.short_description, 
+					cu.progress, cu.deleted_at, cu.is_active, 
+					cu.is_marked, cu.last_access_at`).
+			Joins("JOIN course_users cu on courses.id = cu.course_id", "user_id = ?", userID)
+	if cursor != 0 {
+		query = query.Where("id > ?", cursor)
+	}
+	
+	if err := query.Scan(&courses).Error; err!=nil{
 		return nil, err
 	}
 	return courses, nil

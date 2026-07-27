@@ -29,15 +29,25 @@ type RequestCourseUser struct{
 	LastAccessAt	*time.Time `json:"last_access_at" binding:"omitempty"`
 }
 
+
+
 type ResponseCourse struct { //Để json.Marshal() trả về đúng tên fields
+	//Course
 	ID               uint  `json:"id"`
 	Name             string`json:"name"`
 	Avatar           string`json:"avatar"`
-	Author           ResponseAuthor `json:"author"`
+	Author           ResponseAuthor `gorm:"embedded;embeddedPrefix:Author__" json:"author"`
 	ShortDescription string `json:"short_description"`
 	CreatedAt        time.Time `json:"created_at"`
 	UpdatedAt        time.Time `json:"updated_at"`
-	CourseUser  	*CourseUser `json:"course_user"`
+	
+
+	//Course_user
+	Progress  		float32 `gorm:"not null; check: progress >= 0 and progress <= 1" json:"progress"`
+	DeletedAt 		*time.Time `gorm:"null" json:"deleted_at"`
+	IsActive  		bool `gorm:"default:true" json:"is_active"` //Dùng để hiển thị trong trang lịch sử hoặc ko
+	IsMarked  		bool `gorm:"default:false" json:"is_marked"`
+	LastAccessAt	time.Time `gorm:"not null; default:now()" json:"last_access_at"`
 }
 
 

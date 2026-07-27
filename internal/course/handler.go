@@ -197,7 +197,7 @@ func (handler *Handler) GetHistory(cntx *gin.Context){
 
 	userID, ok := cntx.Get("userID")
 	if !ok {
-		cntx.JSON(500,nil)
+		cntx.JSON(401,gin.H{"message": "Vui lòng đăng nhập!"})
 		return
 	}
 
@@ -208,4 +208,33 @@ func (handler *Handler) GetHistory(cntx *gin.Context){
 	}
 
 	cntx.JSON(200, courseResponse)
+}
+
+
+func (handler *Handler) GetBookMarks(cntx *gin.Context){
+	id := cntx.Query("cursor")
+	cursor := uint(0)
+	if id != ""{
+		termID, err := strconv.ParseUint(id, 10, 64)
+		if err != nil{
+			cntx.JSON(400, gin.H{"message": "ID không hợp lệ!"})
+		}
+		cursor = uint(termID)
+	}
+
+	userID, ok := cntx.Get("userID")
+	if !ok {
+		cntx.JSON(401,gin.H{"message": "Vui lòng đăng nhập!"})
+		return
+	}
+
+	courses, err := handler.service.GetBookmarks(userID.(uint), cursor)
+
+
+	if err != nil{
+		cntx.JSON(500, gin.H{"message": err.Error()})
+		return
+	}
+
+	cntx.JSON(200, courses)
 }

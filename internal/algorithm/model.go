@@ -1,17 +1,12 @@
 package algorithm
 
 import (
-	"time"
-
+	"github.com/HoanNghi16/Devall_backend/internal/pkg"
 	"github.com/HoanNghi16/Devall_backend/internal/user"
-	"gorm.io/gorm"
 )
 
 type Algorithm struct {
-	ID uint `gorm:"primaryKey;autoIncrement" json:"id"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-	DeletedAt *time.Time `json:"deleted_at"`
+	pkg.BaseModel
 	Name  		string `gorm:"not null;unique" json:"name"`
 	Level 		string `gorm:"not null" json:"level"` // easy, medium, hard, advanced	
 	Description string `gorm:"not null" json:"description"`
@@ -20,7 +15,7 @@ type Algorithm struct {
 }
 
 type SolvingHistory struct {
-	gorm.Model
+	pkg.BaseModel
 	AlgorithmID uint
 	Algorithm 	Algorithm 	`gorm:"foreignKey:AlgorithmID"`
 	SolverID   	uint		`gorm:"not null"`

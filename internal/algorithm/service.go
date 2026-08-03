@@ -10,8 +10,8 @@ func NewService(repository *Repository) *Service {
 	}
 }
 
-func (service *Service) GetAlgorithms(filter *AlgoFilter) ([]Algorithm, error) {
-	algorithms, err := service.repository.GetAlgos(filter.Tags, filter.Level, filter.Cursor)
+func (service *Service) GetAlgorithms(userID uint, filter *AlgoFilter) ([]AlgoResponse, error) {
+	algorithms, err := service.repository.GetAlgos(userID, filter.Tags, filter.Level, filter.Cursor)
 	if err != nil {
 		return nil, err
 	}

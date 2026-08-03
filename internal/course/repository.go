@@ -90,7 +90,11 @@ func (repository *Repository)FindAll(userID uint,cursor uint, topicIDs []uint, l
 		query = query.Where("level = ?", level)
 	}
 	
-	query = query.Joins("LEFT JOIN course_users cu on cu.course_id = courses.id", "user_id = ?", userID)
+	if userID != 0{
+		query = query.Joins("LEFT JOIN course_users cu on cu.course_id = courses.id", "user_id = ?", userID)
+	}else{
+		query = query.Joins("LEFT JOIN (select * from course_users where course_id = 0) cu on cu.course_id = courses.id")
+	}
 
 
 	err := query.Scan(&courses).Error

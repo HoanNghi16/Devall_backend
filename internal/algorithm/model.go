@@ -12,11 +12,13 @@ type Algorithm struct {
 	Description string `gorm:"not null" json:"description"`
 	Tags		[]Tag  `gorm:"many2many:algo_tags" json:"tags"`
 	IsPublished bool   `gorm:"not null;default:false" json:"is_published"`
+	SolvingHistories []SolvingHistory `gorm:"foreignKey:AlgorithmID" json:"solving_histories"`
 }
 
 type SolvingHistory struct {
 	pkg.BaseModel
-	AlgorithmID uint
+	IsSolved 	bool		`gorm:"not null;default:false" json:"is_solved"`
+	AlgorithmID uint		`gorm:"not null"`
 	Algorithm 	Algorithm 	`gorm:"foreignKey:AlgorithmID"`
 	SolverID   	uint		`gorm:"not null"`
 	Solver 		user.User 	`gorm:"foreignKey:SolverID"`
@@ -25,6 +27,6 @@ type SolvingHistory struct {
 }
 
 type Tag struct {
-	ID 	 	uint
-	Name 	string 
+	ID 	 	uint	`json:"id"`
+	Name 	string  `json:"name"`
 }

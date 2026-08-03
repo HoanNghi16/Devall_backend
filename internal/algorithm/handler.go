@@ -24,7 +24,15 @@ func (handler *Handler) AlgorithmList(cntx *gin.Context){
 		})
 		return
 	}
-	algorithms, err:=handler.service.GetAlgorithms(&filter)
+
+	userID, ok := cntx.Get("userID")
+
+	if !ok{
+		userID = uint(0)
+	}
+
+	algorithms, err:=handler.service.GetAlgorithms(userID.(uint), &filter)
+
 	if err != nil{
 		cntx.JSON(500, gin.H{
 			"message": "Lỗi truy vấn server!",
@@ -54,4 +62,13 @@ func (handler *Handler) GetAlgorithm (cntx *gin.Context){
 	}
 	cntx.JSON(200, algo)
 	
+}
+
+func (handler *Handler) TagsHandler(cntx *gin.Context){
+	tags, err := handler.service.repository.GetTagsWithAlgo()
+	if err != nil{
+		cntx.JSON(500, gin.H{"message": err.Error()})
+		return
+	}
+	cntx.JSON(200, tags)
 }

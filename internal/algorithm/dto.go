@@ -24,3 +24,10 @@ type AlgoResponse struct {
 	IsSolved	bool   `json:"is_solved"`
 	SolverID    *uint   `json:"solver_id"`
 }
+
+type RankingResponse struct{
+	Rank        int `json:"rank"`
+	RankerName  string `json:"ranker_name"`
+	SolvedCount int `json:"solved_count"`
+	EXP         uint64 `json:"exp"` 
+}

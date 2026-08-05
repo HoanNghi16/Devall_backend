@@ -3,6 +3,7 @@ package algorithm
 import (
 	"errors"
 
+	"github.com/HoanNghi16/Devall_backend/internal/user"
 	"gorm.io/gorm"
 )
 
@@ -31,7 +32,7 @@ func NewRepository(db *gorm.DB)(*Repository){
 func (repository *Repository) GetAlgos(userID uint, tags []uint, level string,cursor uint)([]AlgoResponse, error){
 	query_set := repository.db.Model(&Algorithm{}).Select("algorithms.*, CASE WHEN sh.is_solved IS NOT NULL THEN sh.is_solved ELSE false END as is_solved,  sh.solver_id").Where("algorithms.id > ? AND is_published = true", cursor).Limit(12)
 	if (len(tags) > 0){
-		query_set = query_set.Where("algorithms.id in (SELECT DISTINCT algorithm_id FROM algo_tags WHERE tag_id IN ?)", tags)
+		query_set = query_set.Where(`algorithms.id in (SELECT DISTINCT algorithm_id FROM algo_tags WHERE tag_id IN ?)`, tags)
 	}
 	if level != ""{
 		query_set = query_set.Where("level = ?", level)
@@ -39,12 +40,12 @@ func (repository *Repository) GetAlgos(userID uint, tags []uint, level string,cu
 	var algorithms []AlgoResponse
 
 	if userID != 0{
-		query_set = query_set.Joins("left join solving_histories sh on sh.algorithm_id = algorithms.id", "sh.solver_id = ? and is_solved = true", userID)
+		query_set = query_set.Joins("left join solving_histories sh on sh.algorithm_id = algorithms.id AND sh.solver_id = ? AND sh.is_solved = true ", userID)
 	}else{
 		query_set = query_set.Joins("left join (select * from solving_histories where solver_id = 0) sh on sh.algorithm_id = algorithms.id")
 	}
 	
-	if err:= query_set.Scan(&algorithms).Error; err != nil{
+	if err:= query_set.Order("id").Scan(&algorithms).Error; err != nil{
 		return nil,err
 	}
 	return algorithms, nil
@@ -68,4 +69,30 @@ func (repository *Repository) GetTagsWithAlgo()([]TagResponse, error){
 	}
 
 	return tags, nil
+}
+
+
+
+// type RankingResponse struct{
+// 	Rank        int `json:"rank"`
+// 	RankerName  string `json:"ranker_name"`
+// 	SolvedCount int `json:"solved_count"`
+// 	EXP         uint64 `json:"exp"` 
+// }
+func (repository *Repository) RankingList(userID uint)([]RankingResponse, error){
+	var rankingList []RankingResponse
+
+	query_set := repository.db.Model(&user.User{}).Select(`
+		DENSE_RANK() OVER (ORDER BY p.exp) AS rank, COALESCE(p.name, 'Ẩn danh') as ranker_name, exp, COUNT(DISTINCT sh.algorithm_id) as SolvedCount
+	`).Joins("LEFT JOIN profiles p ON users.id = p.user_id").Joins("JOIN solving_histories sh ON sh.solver_id = users.id and is_solved = true")
+
+
+	if err := query_set.Where("rank <= 10 OR users.id = ?", userID).Scan(&rankingList).Error; err != nil{
+		if errors.Is(err, gorm.ErrRecordNotFound){
+			return nil, errors.New("Có ai trong danh sách xếp hạng")
+		}
+		return nil,errors.New("Tải xếp hạng thất bại!")
+	}
+
+	return rankingList, nil
 }

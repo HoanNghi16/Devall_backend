@@ -1,6 +1,7 @@
 package algorithm
 
 import (
+	"github.com/HoanNghi16/Devall_backend/internal/language"
 	"github.com/HoanNghi16/Devall_backend/internal/pkg"
 	"github.com/HoanNghi16/Devall_backend/internal/user"
 )
@@ -24,6 +25,8 @@ type SolvingHistory struct {
 	Solver 		user.User 	`gorm:"foreignKey:SolverID"`
 	Script      string		`gorm:"not null"`
 	Runtime     string		`gorm:"not null"`
+	LanguageID 	uint 		`gorm:"not null"`
+	Language 	language.SupportedLanguage `gorm:"foreignKey:LanguageID"`
 }
 
 type Tag struct {

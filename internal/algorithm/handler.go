@@ -72,3 +72,19 @@ func (handler *Handler) TagsHandler(cntx *gin.Context){
 	}
 	cntx.JSON(200, tags)
 }
+
+func (handler *Handler) RankListHandler(cntx *gin.Context){
+	userID, ok := cntx.Get("userID")
+	if !ok{
+		userID = uint(0)
+	}	
+
+	rankList, err := handler.service.GetRanks(userID.(uint))
+
+	if err !=nil{
+		cntx.JSON(400, gin.H{"message": err.Error()})
+		return
+	}
+
+	cntx.JSON(200, rankList)
+}

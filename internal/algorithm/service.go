@@ -17,3 +17,7 @@ func (service *Service) GetAlgorithms(userID uint, filter *AlgoFilter) ([]AlgoRe
 	}
 	return algorithms, nil
 }
+
+func (service *Service) GetRanks(userID uint) ([]RankingResponse, error) {
+	return service.repository.RankingList(userID)
+}

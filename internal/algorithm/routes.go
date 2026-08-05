@@ -14,6 +14,7 @@ func AlgorithmRoutes(router *gin.Engine, db *gorm.DB){
 	notProtected := router.Group("/algorithm", auth.OptionalAuth())
 	{
 		notProtected.GET("/algorithms", handler.AlgorithmList)
+		notProtected.GET("/algorithms/ranks", handler.RankListHandler)
 	}
 
 	router.GET("/algorithm/tags", handler.TagsHandler)

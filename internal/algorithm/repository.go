@@ -83,11 +83,13 @@ func (repository *Repository) RankingList(userID uint)([]RankingResponse, error)
 	var rankingList []RankingResponse
 
 	query_set := repository.db.Model(&user.User{}).Select(`
-		DENSE_RANK() OVER (ORDER BY p.exp) AS rank, COALESCE(p.name, 'Ẩn danh') as ranker_name, exp, COUNT(DISTINCT sh.algorithm_id) as SolvedCount
-	`).Joins("LEFT JOIN profiles p ON users.id = p.user_id").Joins("JOIN solving_histories sh ON sh.solver_id = users.id and is_solved = true")
+		DENSE_RANK() OVER (ORDER BY p.exp DESC) AS rank, p.name as ranker_name, exp, sh.solved_count
+	`).Joins("LEFT JOIN profiles p ON users.id = p.user_id").
+	Joins(`LEFT JOIN 
+			(SELECT solver_id, COUNT(DISTINCT algorithm_id) as solved_count FROM solving_histories WHERE is_solved = true GROUP BY solver_id) sh ON sh.solver_id = users.id`)
 
 
-	if err := query_set.Where("rank <= 10 OR users.id = ?", userID).Scan(&rankingList).Error; err != nil{
+	if err := query_set.Scan(&rankingList).Error; err != nil{
 		if errors.Is(err, gorm.ErrRecordNotFound){
 			return nil, errors.New("Có ai trong danh sách xếp hạng")
 		}

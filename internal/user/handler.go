@@ -1,6 +1,7 @@
 package user
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/HoanNghi16/Devall_backend/internal/auth"
@@ -40,6 +41,7 @@ func (h *Handler) RegisterHandler(cntx *gin.Context) {
 	var input RegisterRequest
 
 	if err := cntx.ShouldBindJSON(&input); err != nil{
+		log.Print(input)
 		cntx.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
 		})
@@ -67,6 +69,7 @@ func (h *Handler) LoginHandler(cntx *gin.Context){
 		})
 		return
 	}
+	
 	tokens,err := h.service.Login(&input); 
 	if err != nil{
 		cntx.JSON(http.StatusBadRequest, gin.H{

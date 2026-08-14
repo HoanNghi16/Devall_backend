@@ -20,5 +20,5 @@ type Profile struct{
 	Avatar string `gorm:"default:''" json:"avatar"`
 	Name string `gorm:"default:''" json:"name"`
 	DateOfBirth time.Time `json:"date_of_birth"`
-	PhoneNumber string `json:"phone_number"`
+	PhoneNumber string `gorm:"unique;" json:"phone_number"`
 }

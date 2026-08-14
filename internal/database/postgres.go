@@ -24,7 +24,9 @@ func ConnectDB() (*gorm.DB, error) {
 			" password=" + db_password + 
 			" dbname=" + db_name + 
 			" port=" + db_port + " sslmode=disable"
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		TranslateError: true,
+	})
 
 	//Nếu error khi kết nối -> trả về nil, error
 	if err != nil{

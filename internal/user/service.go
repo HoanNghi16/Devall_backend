@@ -5,6 +5,7 @@ import (
 
 	"github.com/HoanNghi16/Devall_backend/internal/auth"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 type Service struct {
@@ -18,13 +19,11 @@ func NewService(repo *Repository) *Service {
 }
 
 func (s *Service) Register(input *RegisterRequest) (error) {
-	// Hàm này thành công nếu trả về User, nil
-	// -> Nếu error == nil -> có user đã dùng email này
-	_, err := s.repository.FindByEmail(input.Email) 
+	// _, err := s.repository.FindByEmail(input.Email) 
 
-	if err == nil {
-		return errors.New("Đã tồn tại Email!")
-	}
+	// if err == nil {
+	// 	return errors.New("Email đã được sử dụng!")
+	// }
 
 	hash, err := bcrypt.GenerateFromPassword(
 		[]byte(input.Password),
@@ -47,6 +46,9 @@ func (s *Service) Register(input *RegisterRequest) (error) {
 
 	err = s.repository.Create(&user, &profile)
 	if err!= nil{
+		if errors.Is(err, gorm.ErrDuplicatedKey){
+			return errors.New("Email hoặc số điện thoại đã được sử dụng!")
+		}
 		return err
 	}
 
